@@ -1,0 +1,163 @@
+.piano-key {
+  position: absolute;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 0 0 4px 4px;
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 0.5rem;
+}
+
+/* White keys */
+.piano-key.white {
+  width: var(--white-key-width);
+  height: var(--white-key-height);
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.piano-key.white:hover {
+  background: #f9f9f9;
+}
+
+.piano-key.white.pressed {
+  background: #e8e8e8;
+  transform: translateY(2px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Black keys */
+.piano-key.black {
+  width: var(--black-key-width);
+  height: var(--black-key-height);
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  border: 1px solid #000;
+  border-top: none;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
+.piano-key.black:hover {
+  background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
+}
+
+.piano-key.black.pressed {
+  background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+  transform: translateY(2px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Scale highlighting */
+.piano-key.white.in-scale {
+  background: #f0f7ff;
+  border-color: #b3d9ff;
+}
+
+.piano-key.white.in-scale:hover {
+  background: #e5f2ff;
+}
+
+.piano-key.black.in-scale {
+  background: linear-gradient(180deg, #3a4a5a 0%, #2a3a4a 100%);
+}
+
+/* Chord highlighting */
+.piano-key.white.in-chord {
+  background: #fff4e5;
+  border-color: #ffcc80;
+}
+
+.piano-key.white.in-chord:hover {
+  background: #ffe9cc;
+}
+
+.piano-key.black.in-chord {
+  background: linear-gradient(180deg, #5a4a3a 0%, #4a3a2a 100%);
+}
+
+/* Key labels */
+.key-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.note-name {
+  color: #666;
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.piano-key.in-scale .note-name {
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.piano-key.in-chord .note-name {
+  color: #f57c00;
+  font-weight: 600;
+}
+
+.scale-degree {
+  color: #999;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.piano-key.in-scale .scale-degree {
+  color: #1976d2;
+}
+
+.piano-key.in-chord .scale-degree {
+  color: #f57c00;
+}
+
+/* Responsive font sizes */
+@media (max-width: 768px) {
+  .key-label {
+    font-size: 10px;
+  }
+
+  .note-name {
+    font-size: 9px;
+  }
+
+  .scale-degree {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .piano-key {
+    padding-bottom: 0.25rem;
+  }
+
+  .key-label {
+    font-size: 9px;
+    gap: 0.15rem;
+  }
+
+  .note-name {
+    font-size: 8px;
+  }
+
+  .scale-degree {
+    font-size: 7px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .piano-key {
+    touch-action: manipulation;
+  }
+}

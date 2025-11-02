@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Production
+dist/
+build/
+coverage/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Generated files
+*.min.js
+*.min.css
+
+# Config files
+.prettierrc.json
+.eslintrc.json

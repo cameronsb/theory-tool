@@ -1,0 +1,39 @@
+.build-mode {
+  display: flex;
+  height: 100%;
+}
+
+.chord-palette {
+  width: 200px;
+  background: white;
+  border-right: 1px solid #e0e0e0;
+  padding: 1rem;
+}
+
+.palette-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  font-size: 14px;
+  text-align: center;
+}
+
+.timeline-section {
+  flex: 1;
+  padding: 2rem;
+  background: #fafafa;
+}
+
+.timeline-placeholder {
+  background: white;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 18px;
+}

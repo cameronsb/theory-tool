@@ -1,0 +1,42 @@
+.learn-mode {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.piano-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.piano-placeholder {
+  background: white;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 4rem;
+  color: #999;
+  font-size: 18px;
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+}
+
+.chord-display {
+  height: 200px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.chord-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  font-size: 18px;
+}
