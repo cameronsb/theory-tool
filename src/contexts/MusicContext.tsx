@@ -72,7 +72,8 @@ type MusicAction =
     | { type: "REORDER_CHORD_BLOCKS"; payload: { fromIndex: number; toIndex: number } }
     | { type: "MOVE_CHORD_BLOCK"; payload: { id: string; newPosition: number } }
     | { type: "UPDATE_SONG"; payload: Partial<Song> }
-    | { type: "LOAD_SONG"; payload: Song };
+    | { type: "LOAD_SONG"; payload: Song }
+    | { type: "TOGGLE_DRUM_STEP"; payload: { measure: number; drumType: 'kick' | 'snare' | 'hihat'; step: number } };
 
 // Initial state
 const initialState: MusicState = {
@@ -324,6 +325,45 @@ function musicReducer(state: MusicState, action: MusicAction): MusicState {
                 playbackState: { ...state.playbackState, subdivision: action.payload },
             };
 
+        case "TOGGLE_DRUM_STEP": {
+            const { measure, drumType, step } = action.payload;
+            const patterns = [...state.song.tracks.drums.patterns];
+
+            // Find or create pattern for this measure
+            let patternIndex = patterns.findIndex(p => p.measure === measure);
+
+            if (patternIndex === -1) {
+                // Create new pattern
+                const newPattern: import('../types/music').DrumPattern = {
+                    id: `drum-pattern-${Date.now()}-${Math.random()}`,
+                    measure,
+                    kick: Array(16).fill(false),
+                    snare: Array(16).fill(false),
+                    hihat: Array(16).fill(false),
+                };
+                patterns.push(newPattern);
+                patternIndex = patterns.length - 1;
+            }
+
+            // Toggle the step
+            const updatedPattern = { ...patterns[patternIndex] };
+            updatedPattern[drumType] = [...updatedPattern[drumType]];
+            updatedPattern[drumType][step] = !updatedPattern[drumType][step];
+            patterns[patternIndex] = updatedPattern;
+
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    tracks: {
+                        ...state.song.tracks,
+                        drums: { patterns },
+                    },
+                    metadata: { ...state.song.metadata, updatedAt: now },
+                },
+            };
+        }
+
         default:
             return state;
     }
@@ -336,6 +376,9 @@ interface MusicContextType {
     audio: {
         playNote: (frequency: number, duration?: number) => Promise<void>;
         playChord: (frequencies: number[], duration?: number) => Promise<void>;
+        playKick: (time?: number) => void;
+        playSnare: (time?: number) => void;
+        playHiHat: (time?: number) => void;
         loading: boolean;
         audioContext: AudioContext | null;
         instrument: any | null;
@@ -363,6 +406,7 @@ interface MusicContextType {
         moveChordBlock: (id: string, newPosition: number) => void;
         updateSong: (updates: Partial<Song>) => void;
         loadSong: (song: Song) => void;
+        toggleDrumStep: (measure: number, drumType: 'kick' | 'snare' | 'hihat', step: number) => void;
     };
 }
  
@@ -378,7 +422,7 @@ interface MusicProviderProps {
 
 export function MusicProvider({ children }: MusicProviderProps) {
     const [state, dispatch] = useReducer(musicReducer, initialState);
-    const { playNote, playChord, loading, audioContext, instrument } = useAudioEngine();
+    const { playNote, playChord, playKick, playSnare, playHiHat, loading, audioContext, instrument } = useAudioEngine();
 
     // Action creators
     const selectKey = useCallback((key: Note) => {
@@ -511,11 +555,18 @@ export function MusicProvider({ children }: MusicProviderProps) {
         dispatch({ type: "LOAD_SONG", payload: song });
     }, []);
 
+    const toggleDrumStep = useCallback((measure: number, drumType: 'kick' | 'snare' | 'hihat', step: number) => {
+        dispatch({ type: "TOGGLE_DRUM_STEP", payload: { measure, drumType, step } });
+    }, []);
+
     const value: MusicContextType = {
         state,
         audio: {
             playNote,
             playChord,
+            playKick,
+            playSnare,
+            playHiHat,
             loading,
             audioContext,
             instrument,
@@ -543,6 +594,7 @@ export function MusicProvider({ children }: MusicProviderProps) {
             moveChordBlock,
             updateSong,
             loadSong,
+            toggleDrumStep,
         },
     };
 

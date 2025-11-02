@@ -2,6 +2,7 @@ import React from 'react';
 import { useMusic } from '../hooks/useMusic';
 import { ChordPalette } from './ChordPalette';
 import { ChordTimeline } from './ChordTimeline';
+import { DrumTrack } from './DrumTrack';
 import { Piano } from './Piano';
 import './BuildMode.css';
 
@@ -22,6 +23,7 @@ export function BuildMode() {
         </div>
         <div className="timeline-container">
           <ChordTimeline />
+          <DrumTrack />
         </div>
       </div>
       <div className="build-mode-bottom">

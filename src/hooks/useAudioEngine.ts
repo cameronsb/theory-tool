@@ -98,9 +98,111 @@ export function useAudioEngine() {
         });
     }, []);
 
+    const playKick = useCallback((time?: number) => {
+        const { context } = audioRef.current;
+        if (!context) return;
+
+        const when = time ?? context.currentTime;
+
+        // Create oscillator for kick drum (low frequency sweep)
+        const osc = context.createOscillator();
+        const gain = context.createGain();
+
+        osc.frequency.setValueAtTime(150, when);
+        osc.frequency.exponentialRampToValueAtTime(0.01, when + 0.5);
+
+        gain.gain.setValueAtTime(1, when);
+        gain.gain.exponentialRampToValueAtTime(0.01, when + 0.5);
+
+        osc.connect(gain);
+        gain.connect(context.destination);
+
+        osc.start(when);
+        osc.stop(when + 0.5);
+    }, []);
+
+    const playSnare = useCallback((time?: number) => {
+        const { context } = audioRef.current;
+        if (!context) return;
+
+        const when = time ?? context.currentTime;
+
+        // Create noise for snare drum
+        const bufferSize = context.sampleRate * 0.2;
+        const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = context.createBufferSource();
+        noise.buffer = buffer;
+
+        const noiseGain = context.createGain();
+        noiseGain.gain.setValueAtTime(0.7, when);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, when + 0.2);
+
+        // Add tonal component
+        const osc = context.createOscillator();
+        const oscGain = context.createGain();
+        osc.frequency.value = 200;
+
+        oscGain.gain.setValueAtTime(0.3, when);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, when + 0.1);
+
+        noise.connect(noiseGain);
+        noiseGain.connect(context.destination);
+
+        osc.connect(oscGain);
+        oscGain.connect(context.destination);
+
+        noise.start(when);
+        osc.start(when);
+        noise.stop(when + 0.2);
+        osc.stop(when + 0.1);
+    }, []);
+
+    const playHiHat = useCallback((time?: number) => {
+        const { context } = audioRef.current;
+        if (!context) return;
+
+        const when = time ?? context.currentTime;
+
+        // Create noise for hi-hat
+        const bufferSize = context.sampleRate * 0.05;
+        const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = context.createBufferSource();
+        noise.buffer = buffer;
+
+        const highpass = context.createBiquadFilter();
+        highpass.type = 'highpass';
+        highpass.frequency.value = 7000;
+
+        const gain = context.createGain();
+        gain.gain.setValueAtTime(0.3, when);
+        gain.gain.exponentialRampToValueAtTime(0.01, when + 0.05);
+
+        noise.connect(highpass);
+        highpass.connect(gain);
+        gain.connect(context.destination);
+
+        noise.start(when);
+        noise.stop(when + 0.05);
+    }, []);
+
     return {
         playNote,
         playChord,
+        playKick,
+        playSnare,
+        playHiHat,
         loading,
         audioContext: audioRef.current.context,
         instrument: audioRef.current.instrument,

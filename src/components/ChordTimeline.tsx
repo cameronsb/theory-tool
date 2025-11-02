@@ -45,9 +45,13 @@ export function ChordTimeline() {
   const playback = usePlayback({
     tempo: state.song.tempo,
     chordBlocks,
+    drumPatterns: state.song.tracks.drums.patterns,
     loop: state.playbackState.loop,
     audioContext: audio.audioContext,
     instrument: audio.instrument,
+    playKick: audio.playKick,
+    playSnare: audio.playSnare,
+    playHiHat: audio.playHiHat,
     onTimeUpdate: handleTimeUpdate,
     onPlaybackEnd: handlePlaybackEnd,
   });
