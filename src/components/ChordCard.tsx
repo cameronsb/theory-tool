@@ -41,6 +41,7 @@ interface ChordCardProps {
   isDiatonic?: boolean;
   compact?: boolean; // deprecated, use variationMode instead
   variationMode?: 'buttons' | 'select';
+  showMiniPreview?: boolean;
 }
 
 export function ChordCard({
@@ -50,7 +51,8 @@ export function ChordCard({
   type,
   isDiatonic = true,
   compact = false,
-  variationMode = 'buttons'
+  variationMode = 'buttons',
+  showMiniPreview = true
 }: ChordCardProps) {
   const [activeModifiers, setActiveModifiers] = useState<Set<string>>(new Set());
   const [currentIntervals, setCurrentIntervals] = useState<number[]>(intervals);
@@ -208,7 +210,7 @@ export function ChordCard({
       console.error('Error playing chord:', error);
     }
 
-    // If keyboard preview is enabled, also select the chord to show on keyboard
+    // If keyboard preview is enabled, also select the chord to show on piano keys
     if (state.keyboardPreviewEnabled) {
       const isSelected = state.selectedChords.length > 0 &&
         state.selectedChords[0].rootNote === rootNote &&
@@ -490,7 +492,7 @@ export function ChordCard({
             <div className="chord-numeral">{numeral}</div>
             <div className="chord-name">{getChordDisplayName()}</div>
           </div>
-          <PianoVisualization />
+          {showMiniPreview && <PianoVisualization />}
           <select
             className="variations-select"
             value={Array.from(activeModifiers)[0] || ''}
@@ -520,7 +522,7 @@ export function ChordCard({
           <div className="chord-numeral">{numeral}</div>
           <div className="chord-name">{getChordDisplayName()}</div>
         </div>
-        <PianoVisualization />
+        {showMiniPreview && <PianoVisualization />}
         <div className="modifier-buttons-grid" onClick={(e) => e.stopPropagation()}>
           {availableModifiers.map(modifier => (
             <button

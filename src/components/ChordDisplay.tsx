@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { useMusic } from '../hooks/useMusic';
+import { useSettings } from '../hooks/useSettings';
 import { getScaleChords, getBorrowedChords } from '../utils/musicTheory';
 import { ChordCard } from './ChordCard';
 import './ChordDisplay.css';
@@ -35,14 +35,22 @@ const BORROWED_GROUPS = {
 };
 
 type ViewMode = 'full' | 'compact';
+type LayoutMode = 'default' | 'sidebar';
 
-export function ChordDisplay() {
+interface ChordDisplayProps {
+  layout?: LayoutMode;
+}
+
+export function ChordDisplay({ layout = 'default' }: ChordDisplayProps) {
   const { state, actions } = useMusic();
   const { key, mode } = state.song;
+  const { settings, setDiatonicChordSort, setBorrowedChordSort, setShowMiniPreview } = useSettings();
 
-  const [diatonicSort, setDiatonicSort] = useState<SortMode>('default');
-  const [borrowedSort, setBorrowedSort] = useState<SortMode>('default');
-  const [viewMode, _setViewMode] = useState<ViewMode>('full'); // Default to full (buttons mode)
+  // Load sort preferences from settings
+  const diatonicSort = settings.ui.chordSort.diatonic;
+  const borrowedSort = settings.ui.chordSort.borrowed;
+
+  const viewMode: ViewMode = 'full'; // Default to full (buttons mode)
 
   const diatonicChords = getScaleChords(key, mode);
   const borrowedChords = getBorrowedChords(key, mode);
@@ -55,6 +63,9 @@ export function ChordDisplay() {
     return chords.filter(chord => numerals.includes(chord.numeral));
   };
 
+  // Determine variation mode based on layout
+  const effectiveVariationMode = layout === 'sidebar' ? 'select' : (viewMode === 'compact' ? 'select' : 'buttons');
+
   // Render chord cards
   const renderChordCard = (chord: typeof diatonicChords[0], isDiatonic: boolean) => (
     <ChordCard
@@ -64,24 +75,132 @@ export function ChordDisplay() {
       intervals={chord.intervals}
       type={chord.type}
       isDiatonic={isDiatonic}
-      variationMode={viewMode === 'compact' ? 'select' : 'buttons'}
+      variationMode={effectiveVariationMode}
+      showMiniPreview={settings.ui.piano.showMiniPreview}
     />
   );
 
+  // Sidebar layout: stack all chords vertically
+  if (layout === 'sidebar') {
+    return (
+      <div className="chord-display chord-display-sidebar">
+        {/* Preview Controls */}
+        <div className="preview-controls">
+          <label className="keyboard-preview-control">
+            <input
+              type="checkbox"
+              checked={state.keyboardPreviewEnabled}
+              onChange={actions.toggleKeyboardPreview}
+              className="keyboard-preview-checkbox"
+            />
+            <span className="keyboard-preview-text">
+              Show on piano
+            </span>
+          </label>
+          <label className="keyboard-preview-control">
+            <input
+              type="checkbox"
+              checked={settings.ui.piano.showMiniPreview}
+              onChange={(e) => setShowMiniPreview(e.target.checked)}
+              className="keyboard-preview-checkbox"
+            />
+            <span className="keyboard-preview-text">
+              Show mini preview
+            </span>
+          </label>
+        </div>
+
+        {/* Single stacked section with all chords */}
+        <div className="chord-section-stacked">
+          <div className="section-header">
+            <h3 className="section-title">Diatonic</h3>
+            <select
+              className="sort-dropdown"
+              value={diatonicSort}
+              onChange={(e) => setDiatonicChordSort(e.target.value as SortMode)}
+            >
+              <option value="default">Default</option>
+              <option value="grouped">Grouped</option>
+            </select>
+          </div>
+
+          <div className="chord-grid">
+            {diatonicSort === 'default' ? (
+              diatonicChords.map((chord) => renderChordCard(chord, true))
+            ) : (
+              Object.entries(groups).map(([key, group]) => (
+                <div key={key} className="chord-subsection">
+                  <h4 className="subsection-title">{group.label}</h4>
+                  {getChordsByNumerals(diatonicChords, group.numerals).map((chord) =>
+                    renderChordCard(chord, true)
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Borrowed chords section */}
+        <div className="chord-section-stacked">
+          <div className="section-header">
+            <h3 className="section-title">Borrowed</h3>
+            <select
+              className="sort-dropdown"
+              value={borrowedSort}
+              onChange={(e) => setBorrowedChordSort(e.target.value as SortMode)}
+            >
+              <option value="default">Default</option>
+              <option value="grouped">Grouped</option>
+            </select>
+          </div>
+
+          <div className="chord-grid">
+            {borrowedSort === 'default' ? (
+              borrowedChords.map((chord) => renderChordCard(chord, false))
+            ) : (
+              Object.entries(borrowedGroups).map(([key, group]: [string, any]) => (
+                <div key={key} className="chord-subsection">
+                  <h4 className="subsection-title">{group.label}</h4>
+                  {getChordsByNumerals(borrowedChords, group.numerals).map((chord) =>
+                    renderChordCard(chord, false)
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Default layout: two-column display
   return (
     <div className="chord-display">
-      {/* Keyboard Preview Toggle */}
-      <label className="keyboard-preview-control">
-        <input
-          type="checkbox"
-          checked={state.keyboardPreviewEnabled}
-          onChange={actions.toggleKeyboardPreview}
-          className="keyboard-preview-checkbox"
-        />
-        <span className="keyboard-preview-text">
-          Show chords on keyboard
-        </span>
-      </label>
+      {/* Preview Controls */}
+      <div className="preview-controls">
+        <label className="keyboard-preview-control">
+          <input
+            type="checkbox"
+            checked={state.keyboardPreviewEnabled}
+            onChange={actions.toggleKeyboardPreview}
+            className="keyboard-preview-checkbox"
+          />
+          <span className="keyboard-preview-text">
+            Show chords on keyboard
+          </span>
+        </label>
+        <label className="keyboard-preview-control">
+          <input
+            type="checkbox"
+            checked={settings.ui.piano.showMiniPreview}
+            onChange={(e) => setShowMiniPreview(e.target.checked)}
+            className="keyboard-preview-checkbox"
+          />
+          <span className="keyboard-preview-text">
+            Show mini preview
+          </span>
+        </label>
+      </div>
 
       {/* View mode toggle - hidden for now
       <div className="view-mode-toggle">
@@ -109,7 +228,7 @@ export function ChordDisplay() {
             <select
               className="sort-dropdown"
               value={diatonicSort}
-              onChange={(e) => setDiatonicSort(e.target.value as SortMode)}
+              onChange={(e) => setDiatonicChordSort(e.target.value as SortMode)}
             >
               <option value="default">Default Order</option>
               <option value="grouped">Grouped by Function</option>
@@ -141,7 +260,7 @@ export function ChordDisplay() {
             <select
               className="sort-dropdown"
               value={borrowedSort}
-              onChange={(e) => setBorrowedSort(e.target.value as SortMode)}
+              onChange={(e) => setBorrowedChordSort(e.target.value as SortMode)}
             >
               <option value="default">Default Order</option>
               <option value="grouped">Grouped by Impact</option>

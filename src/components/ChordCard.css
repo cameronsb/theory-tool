@@ -211,14 +211,17 @@
   gap: 8px;
 }
 
-.chord-card-select .chord-info,
-.chord-card-compact .chord-info {
-  gap: 6px;
-}
-
 .chord-card-select .chord-numeral,
 .chord-card-compact .chord-numeral {
-  font-size: 14px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-shadow:
+    2px 2px 0 rgba(0, 0, 0, 0.3),
+    3px 3px 0 rgba(0, 0, 0, 0.2),
+    4px 4px 0 rgba(0, 0, 0, 0.1);
+  padding-right: 10px;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .chord-card-select .chord-name,
@@ -226,6 +229,7 @@
   font-size: 16px;
   min-width: 60px;
   max-width: 60px;
+  padding-left: 10px;
 }
 
 /* Native select for variations */

@@ -37,10 +37,23 @@ export interface UISettings {
     };
   };
 
+  // Learn mode sidebar configuration
+  learnSidebar: {
+    width: number;      // Width of sidebar (280-600px)
+    isOpen: boolean;    // Whether sidebar is open or closed
+  };
+
+  // Chord display sort preferences
+  chordSort: {
+    diatonic: 'default' | 'grouped';  // Sort mode for diatonic chords
+    borrowed: 'default' | 'grouped';  // Sort mode for borrowed chords
+  };
+
   // Piano/keyboard display settings
   piano: {
     showInScaleColors: boolean;     // Highlight scale notes on piano
     keyboardPreviewEnabled: boolean; // Show chord notes on keyboard when chord is selected
+    showMiniPreview: boolean;        // Show mini piano preview on chord cards
   };
 }
 
@@ -79,9 +92,18 @@ export const DEFAULT_SETTINGS: UserSettings = {
         drums: 300,
       },
     },
+    learnSidebar: {
+      width: 420,       // Default: 420px width
+      isOpen: true,     // Default: open
+    },
+    chordSort: {
+      diatonic: 'default',  // Default: default order
+      borrowed: 'default',  // Default: default order
+    },
     piano: {
       showInScaleColors: true,        // Default: highlight scale notes
       keyboardPreviewEnabled: true,    // Default: show chords on keyboard
+      showMiniPreview: true,           // Default: show mini preview on cards
     },
   },
 };

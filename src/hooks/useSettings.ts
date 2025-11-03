@@ -33,6 +33,14 @@ function mergeWithDefaults(stored: Partial<UserSettings>): UserSettings {
           ...(stored.ui?.builderPanel?.rememberedHeights || {}),
         },
       },
+      learnSidebar: {
+        ...DEFAULT_SETTINGS.ui.learnSidebar,
+        ...(stored.ui?.learnSidebar || {}),
+      },
+      chordSort: {
+        ...DEFAULT_SETTINGS.ui.chordSort,
+        ...(stored.ui?.chordSort || {}),
+      },
       piano: {
         ...DEFAULT_SETTINGS.ui.piano,
         ...(stored.ui?.piano || {}),
@@ -178,6 +186,71 @@ export function useSettings() {
     }));
   };
 
+  const setLearnSidebarWidth = (width: number) => {
+    setSettings((prev) => ({
+      ...prev,
+      ui: {
+        ...prev.ui,
+        learnSidebar: {
+          ...prev.ui.learnSidebar,
+          width: Math.max(280, Math.min(600, width)),
+        },
+      },
+    }));
+  };
+
+  const setLearnSidebarOpen = (isOpen: boolean) => {
+    setSettings((prev) => ({
+      ...prev,
+      ui: {
+        ...prev.ui,
+        learnSidebar: {
+          ...prev.ui.learnSidebar,
+          isOpen,
+        },
+      },
+    }));
+  };
+
+  const setDiatonicChordSort = (sortMode: 'default' | 'grouped') => {
+    setSettings((prev) => ({
+      ...prev,
+      ui: {
+        ...prev.ui,
+        chordSort: {
+          ...prev.ui.chordSort,
+          diatonic: sortMode,
+        },
+      },
+    }));
+  };
+
+  const setBorrowedChordSort = (sortMode: 'default' | 'grouped') => {
+    setSettings((prev) => ({
+      ...prev,
+      ui: {
+        ...prev.ui,
+        chordSort: {
+          ...prev.ui.chordSort,
+          borrowed: sortMode,
+        },
+      },
+    }));
+  };
+
+  const setShowMiniPreview = (show: boolean) => {
+    setSettings((prev) => ({
+      ...prev,
+      ui: {
+        ...prev.ui,
+        piano: {
+          ...prev.ui.piano,
+          showMiniPreview: show,
+        },
+      },
+    }));
+  };
+
   return {
     settings,
     setSettings,
@@ -190,5 +263,10 @@ export function useSettings() {
     setBuilderPanelRememberedHeight,
     setShowInScaleColors,
     setKeyboardPreviewEnabled,
+    setLearnSidebarWidth,
+    setLearnSidebarOpen,
+    setDiatonicChordSort,
+    setBorrowedChordSort,
+    setShowMiniPreview,
   };
 }

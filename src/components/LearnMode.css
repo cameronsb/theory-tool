@@ -6,6 +6,170 @@
   overflow: hidden;
 }
 
+/* Sidebar layout variant */
+.learn-mode-sidebar {
+  display: grid;
+  grid-template-rows: 1fr;
+  gap: 0;
+  position: relative;
+  /* Note: grid-template-columns is set inline via style prop for dynamic resizing */
+}
+
+.chord-sidebar {
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  border-right: 2px solid rgba(255, 255, 255, 0.1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Note: width is set inline via style prop for dynamic resizing */
+}
+
+.chord-sidebar.open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.chord-sidebar.closed {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Resize handle for sidebar */
+.sidebar-resize-handle {
+  position: absolute;
+  top: 0;
+  left: var(--sidebar-width, 420px);
+  bottom: 0;
+  width: 8px;
+  cursor: ew-resize;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-resize-handle:hover,
+.sidebar-resize-handle.resizing {
+  background-color: rgba(102, 126, 234, 0.2);
+}
+
+.sidebar-resize-indicator {
+  width: 2px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.sidebar-resize-handle:hover .sidebar-resize-indicator,
+.sidebar-resize-handle.resizing .sidebar-resize-indicator {
+  background: rgba(102, 126, 234, 0.8);
+  height: 60px;
+  width: 3px;
+}
+
+/* Close button inside sidebar */
+.sidebar-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+  padding: 0;
+}
+
+.sidebar-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.sidebar-close-btn:active {
+  transform: scale(0.95);
+}
+
+/* Backdrop overlay (mobile only) */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.piano-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #0f0f1e 0%, #1a1a2e 100%);
+  padding: 20px;
+  position: relative;
+}
+
+/* Floating Action Button */
+.sidebar-fab {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4),
+              0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+}
+
+.sidebar-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6),
+              0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-fab:active {
+  transform: scale(1.05);
+}
+
+.sidebar-fab svg {
+  width: 24px;
+  height: 24px;
+}
+
 .piano-section {
   display: flex;
   align-items: center;
@@ -24,4 +188,59 @@
   width: 100%;
   max-width: 800px;
   text-align: center;
+}
+
+/* Tablet responsive: overlay sidebar on smaller screens */
+@media (max-width: 1024px) {
+  .learn-mode-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .chord-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 320px;
+    max-width: 85vw;
+    border-right: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+  }
+
+  .chord-sidebar.closed {
+    transform: translateX(-100%);
+  }
+
+  /* Show backdrop on tablet/mobile */
+  .sidebar-backdrop {
+    display: block;
+  }
+
+  .piano-main {
+    grid-column: 1;
+  }
+}
+
+/* Mobile: smaller sidebar */
+@media (max-width: 768px) {
+  .chord-sidebar {
+    width: 280px;
+  }
+
+  .piano-main {
+    padding: 10px;
+  }
+
+  .sidebar-fab {
+    width: 44px;
+    height: 44px;
+    top: 16px;
+    left: 16px;
+  }
+
+  .sidebar-fab svg {
+    width: 22px;
+    height: 22px;
+  }
 }

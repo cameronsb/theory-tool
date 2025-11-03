@@ -80,7 +80,7 @@ export function Piano({
             showScaleDegree={showScaleDegrees}
             selectedKey={state.song.key}
             mode={state.song.mode}
-            showScaleLabels={state.keyboardPreviewEnabled && scaleNotes.has(keyData.baseNote)}
+            showScaleLabels={scaleNotes.has(keyData.baseNote)}
           />
         ))}
       </div>
