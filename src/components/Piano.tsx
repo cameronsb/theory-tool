@@ -1,6 +1,7 @@
-import React, { useMemo, useRef, useState, useCallback } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useMusic } from '../hooks/useMusic';
 import { usePianoLayout } from '../hooks/usePianoLayout';
+import { useGlissando } from '../hooks/useGlissando';
 import { PianoKey } from './PianoKey';
 import { generatePianoKeys, getWhiteKeyCount } from '../utils/pianoUtils';
 import { getScaleNotes, NOTES } from '../utils/musicTheory';
@@ -24,8 +25,6 @@ export function Piano({
 }: PianoProps) {
   const { state, audio } = useMusic();
   const pianoContainerRef = useRef<HTMLDivElement>(null);
-  const [glissandoTouchId, setGlissandoTouchId] = useState<number | null>(null);
-  const [lastPlayedKey, setLastPlayedKey] = useState<string | null>(null);
 
   // Use flexible layout if enabled
   const layout = usePianoLayout(pianoContainerRef as React.RefObject<HTMLDivElement>, {
@@ -68,54 +67,23 @@ export function Piano({
     await audio.playNote(frequency);
   };
 
-  // Glissando support - sliding finger across keys
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length > 0) {
-      const touch = e.touches[0];
-      setGlissandoTouchId(touch.identifier);
-      setLastPlayedKey(null); // Reset on new touch
-    }
-  }, []);
-
-  const handleTouchMove = useCallback(async (e: React.TouchEvent) => {
-    if (glissandoTouchId === null) return;
-
-    // Find the active touch
-    const touch = Array.from(e.touches).find(t => t.identifier === glissandoTouchId);
-    if (!touch) return;
-
-    // Get the element at the touch point
-    const element = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (!element) return;
-
-    // Check if it's a piano key
-    const keyElement = element.closest('.piano-key');
-    if (!keyElement) return;
-
-    // Get key note from aria-label
-    const keyNote = keyElement.getAttribute('aria-label');
-    if (!keyNote || keyNote === lastPlayedKey) return;
-
-    // Play the key if it's different from the last one
-    const keyData = keys.find(k => k.note === keyNote);
-    if (keyData) {
-      setLastPlayedKey(keyNote);
-      await audio.playNote(keyData.frequency);
-    }
-  }, [glissandoTouchId, lastPlayedKey, keys, audio]);
-
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    const changedTouches = Array.from(e.changedTouches);
-    if (glissandoTouchId !== null && changedTouches.some(t => t.identifier === glissandoTouchId)) {
-      setGlissandoTouchId(null);
-      setLastPlayedKey(null);
-    }
-  }, [glissandoTouchId]);
+  // Unified glissando support for both mouse and touch
+  const { isActive: isGlissandoActive, handlers: glissandoHandlers } = useGlissando({
+    onTrigger: async (keyNote: string) => {
+      const keyData = keys.find(k => k.note === keyNote);
+      if (keyData) {
+        await audio.playNote(keyData.frequency);
+      }
+    },
+    selector: '.piano-key',
+    getIdentifier: (element) => element.getAttribute('aria-label'),
+    preventDefault: true,
+  });
 
   return (
     <div className="piano" ref={pianoContainerRef}>
       <div
-        className={`piano-keys ${glissandoTouchId !== null ? 'glissando-active' : ''}`}
+        className={`piano-keys ${isGlissandoActive ? 'glissando-active' : ''}`}
         style={{
           '--white-key-count': whiteKeyCount,
           '--white-key-width': flexible ? `${layout.whiteKeyWidth}px` : undefined,
@@ -123,10 +91,7 @@ export function Piano({
           '--black-key-width': flexible ? `${layout.blackKeyWidth}px` : undefined,
           '--black-key-height': flexible ? `${layout.blackKeyHeight}px` : undefined,
         } as React.CSSProperties}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchEnd}
+        {...glissandoHandlers}
       >
         {keys.map((keyData) => (
           <PianoKey
