@@ -34,7 +34,7 @@ export function BuildMode() {
   const initialHeight = settings.ui.builderPanel.rememberedHeights[bottomView];
 
   // Resizable bottom panel
-  const { height: bottomHeight, isResizing, handleMouseDown, setHeight } = useResizable({
+  const { height: bottomHeight, isResizing, handleMouseDown, handleTouchStart, setHeight } = useResizable({
     initialHeight,
     minHeight: 150,
     maxHeight: 600,
@@ -75,6 +75,7 @@ export function BuildMode() {
       <div
         className={`panel-resize-handle ${isResizing ? 'resizing' : ''}`}
         onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
         title="Drag to resize"
       >
         <div className="panel-resize-indicator" />

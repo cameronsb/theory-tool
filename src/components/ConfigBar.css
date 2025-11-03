@@ -5,85 +5,106 @@
   right: 0;
   display: flex;
   align-items: center;
-  gap: 2rem;
-  padding: 1rem 2rem;
-  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
   z-index: 100;
-  transition: transform 0.3s ease, padding 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 56px;
 }
 
 /* Collapsed state */
 .config-bar.collapsed {
-  transform: translateY(-100%);
-  padding-bottom: 40px; /* Keep collapse button visible */
+  transform: translateY(calc(-100% + 10px));
 }
 
 /* Collapse toggle button */
 .collapse-toggle {
   position: absolute;
-  bottom: -40px;
+  bottom: -30px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 8px 24px;
-  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 18px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(102, 126, 234, 0.3);
   border-top: none;
-  border-radius: 0 0 8px 8px;
-  color: rgba(255, 255, 255, 0.7);
+  border-radius: 0 0 12px 12px;
+  color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 101;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.collapse-toggle:hover {
-  background: linear-gradient(180deg, #1e1e32 0%, #1a254a 100%);
+.collapse-toggle:hover,
+.collapse-toggle:active {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+  border-color: rgba(102, 126, 234, 0.5);
   color: white;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
 }
 
 .mode-toggle {
   display: flex;
-  gap: 0.5rem;
+  gap: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .mode-toggle button {
-  padding: 0.5rem 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1.25rem;
+  border: none;
+  background: transparent;
   color: rgba(255, 255, 255, 0.7);
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  min-width: 70px;
 }
 
-.mode-toggle button:hover {
-  background: rgba(255, 255, 255, 0.15);
+.mode-toggle button:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.9);
 }
 
 .mode-toggle button.active {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
 }
 
 .menu-toggle {
-  display: none;
+  display: none; /* Hidden by default, shown only on mobile */
   margin-left: auto;
-  padding: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
-  border-radius: 4px;
+  padding: 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 40px;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
 }
 
-.menu-toggle:hover {
-  background: rgba(255, 255, 255, 0.15);
+.menu-toggle:hover,
+.menu-toggle:active {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.4);
   color: white;
 }
 
@@ -93,8 +114,9 @@
 
 .config-controls {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   margin-left: auto;
+  align-items: center;
 }
 
 .control-group {
@@ -112,58 +134,91 @@
 }
 
 .control-group select {
-  padding: 6px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.3);
   color: white;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  min-width: 100px;
-  transition: all 0.2s ease;
+  min-width: 90px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
 }
 
 .control-group select option {
-  background: #1a1a2e;
+  background: #16213e;
   color: white;
+  padding: 8px;
 }
 
 .control-group select:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .control-group select:focus {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(102, 126, 234, 0.15);
   border-color: rgba(102, 126, 234, 0.5);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Tablet responsive (iPad and similar) */
+@media (max-width: 1024px) {
+  .config-bar {
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .control-group {
+    gap: 0.2rem;
+  }
+
+  .control-group label {
+    font-size: 10px;
+  }
+
+  .control-group select {
+    min-width: 80px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .mode-toggle button {
+    padding: 0.45rem 1rem;
+    font-size: 13px;
+    min-width: 65px;
+  }
 }
 
 /* Mobile responsive */
 @media (max-width: 768px) {
   .config-bar {
-    padding: 1rem;
+    padding: 0.75rem;
+    gap: 0.5rem;
   }
 
   .menu-toggle {
-    display: block;
+    display: flex;
   }
 
   .config-controls {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 280px;
+    width: 300px;
     height: 100vh;
     margin: 0;
     padding: 2rem 1.5rem;
-    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-    box-shadow: -2px 0 16px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.6);
     flex-direction: column;
+    align-items: stretch;
     gap: 1.5rem;
-    transition: right 0.3s ease;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
+    border-left: 2px solid rgba(102, 126, 234, 0.2);
   }
 
   .config-controls.open {
@@ -177,8 +232,20 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     z-index: 999;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .control-group {
@@ -187,5 +254,13 @@
 
   .control-group select {
     width: 100%;
+    min-width: auto;
+    padding: 10px 14px;
+    font-size: 15px;
+  }
+
+  .control-group label {
+    font-size: 11px;
+    margin-bottom: 2px;
   }
 }

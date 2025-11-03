@@ -49,9 +49,19 @@ export function usePlayback({
   }, [tempo]);
 
   const getTotalDurationInEighths = useCallback(() => {
-    if (chordBlocks.length === 0) return 0;
-    return chordBlocks.reduce((sum, block) => sum + block.duration, 0);
-  }, [chordBlocks]);
+    // Calculate duration from chord blocks
+    const chordDuration = chordBlocks.length > 0
+      ? chordBlocks.reduce((sum, block) => sum + block.duration, 0)
+      : 0;
+
+    // Calculate duration from drum patterns (8 eighths per measure in 4/4)
+    const drumDuration = drumPatterns.length > 0
+      ? Math.max(...drumPatterns.map(p => (p.measure + 1) * 8))
+      : 0;
+
+    // Return the longer of the two
+    return Math.max(chordDuration, drumDuration);
+  }, [chordBlocks, drumPatterns]);
 
   const scheduleChord = useCallback(
     (block: ChordBlock, when: number) => {
@@ -220,7 +230,9 @@ export function usePlayback({
   ]);
 
   const play = useCallback(() => {
-    if (!audioContext || !instrument || chordBlocks.length === 0) return;
+    if (!audioContext || !instrument) return;
+    // Allow playback if there are either chord blocks or drum patterns
+    if (chordBlocks.length === 0 && drumPatterns.length === 0) return;
     if (isPlayingRef.current) return;
 
     if (audioContext.state === 'suspended') {
@@ -239,7 +251,7 @@ export function usePlayback({
     }, SCHEDULE_INTERVAL);
 
     rafIdRef.current = requestAnimationFrame(updatePlayhead);
-  }, [audioContext, instrument, chordBlocks, scheduleAheadEvents, updatePlayhead]);
+  }, [audioContext, instrument, chordBlocks, drumPatterns, scheduleAheadEvents, updatePlayhead]);
 
   const stop = useCallback(() => {
     pause();

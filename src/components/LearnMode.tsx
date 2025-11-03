@@ -2,12 +2,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { Piano } from './Piano';
 import { ChordDisplay } from './ChordDisplay';
 import { useSettings } from '../hooks/useSettings';
+import { useMusic } from '../hooks/useMusic';
 import { useResizableHorizontal } from '../hooks/useResizableHorizontal';
+import { useResizable } from '../hooks/useResizable';
 import { isIPad } from '../utils/deviceDetection';
 import './LearnMode.css';
 
 export function LearnMode() {
   const { settings, setLearnSidebarWidth, setLearnSidebarOpen } = useSettings();
+  const { state, actions } = useMusic();
   const isSidebarOpen = settings.ui.learnSidebar.isOpen;
   const [useTabletLayout, setUseTabletLayout] = useState(isIPad());
 
@@ -30,7 +33,7 @@ export function LearnMode() {
     setLearnSidebarWidth(newWidth);
   }, [setLearnSidebarWidth]);
 
-  const { width: sidebarWidth, isResizing, handleMouseDown, setWidth } = useResizableHorizontal({
+  const { width: sidebarWidth, isResizing, handleMouseDown, handleTouchStart, setWidth } = useResizableHorizontal({
     initialWidth: settings.ui.learnSidebar.width,
     minWidth: 280,
     maxWidth: 600,
@@ -42,18 +45,63 @@ export function LearnMode() {
     setWidth(settings.ui.learnSidebar.width);
   }, [settings.ui.learnSidebar.width, setWidth]);
 
+  // Resizable piano height for tablet
+  const handlePianoResize = useCallback((_newHeight: number) => {
+    // Could save to settings if we want persistence
+  }, []);
+
+  const {
+    height: pianoHeight,
+    isResizing: isPianoResizing,
+    handleMouseDown: handlePianoMouseDown,
+    handleTouchStart: handlePianoTouchStart
+  } = useResizable({
+    initialHeight: 280,
+    minHeight: 200,
+    maxHeight: 500,
+    onResize: handlePianoResize,
+  });
+
   // iPad-optimized layout
   if (useTabletLayout) {
     return (
       <div className="learn-mode learn-mode-tablet">
-        <div className="tablet-diatonic-chords">
-          <ChordDisplay layout="diatonic-only" />
+        {/* Chord area - scrollable, takes remaining space */}
+        <div className="tablet-chord-area">
+          <div className="tablet-diatonic-chords">
+            <ChordDisplay layout="diatonic-only" />
+          </div>
+          <div className="tablet-borrowed-chords">
+            <ChordDisplay layout="borrowed-only" />
+          </div>
         </div>
-        <div className="tablet-piano-container">
+
+        {/* Resize handle */}
+        <div
+          className={`tablet-piano-resize-handle ${isPianoResizing ? 'resizing' : ''}`}
+          onMouseDown={handlePianoMouseDown}
+          onTouchStart={handlePianoTouchStart}
+          title="Drag to resize piano"
+        >
+          <div className="tablet-piano-resize-indicator" />
+        </div>
+
+        {/* Piano at bottom - fixed height, resizable */}
+        <div className="tablet-piano-container" style={{ height: pianoHeight }}>
+          {/* In-scale colors toggle */}
+          <label className="tablet-piano-control">
+            <input
+              type="checkbox"
+              checked={state.showInScaleColors}
+              onChange={actions.toggleInScaleColors}
+              className="piano-control-checkbox"
+              title="Show scale notes on piano"
+            />
+            <span className="piano-control-text">
+              Scale
+            </span>
+          </label>
           <Piano startOctave={4} octaveCount={2} showScaleDegrees={true} />
-        </div>
-        <div className="tablet-borrowed-chords">
-          <ChordDisplay layout="borrowed-only" />
         </div>
       </div>
     );
@@ -97,6 +145,7 @@ export function LearnMode() {
         <div
           className={`sidebar-resize-handle ${isResizing ? 'resizing' : ''}`}
           onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
           title="Drag to resize sidebar"
           style={{ left: sidebarWidth }}
         >

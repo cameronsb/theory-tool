@@ -64,13 +64,13 @@
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease;
   touch-action: manipulation;
   -webkit-tap-highlight-color: rgba(102, 126, 234, 0.2);
 }
 
 .chord-tile:active {
-  transform: scale(0.98);
+  /* Removed scale transform - jarring on touch devices */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 

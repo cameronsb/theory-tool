@@ -5,12 +5,12 @@ import './ConfigBar.css';
 
 type Mode = 'learn' | 'build';
 
- 
+
 interface ConfigBarProps {
   mode: Mode;
   onModeChange: (mode: Mode) => void;
 }
- 
+
 
 export function ConfigBar({ mode, onModeChange }: ConfigBarProps) {
   const { state, actions } = useMusic();
@@ -25,11 +25,23 @@ export function ConfigBar({ mode, onModeChange }: ConfigBarProps) {
         onClick={() => setIsCollapsed(!isCollapsed)}
         aria-label={isCollapsed ? 'Expand config bar' : 'Collapse config bar'}
       >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-          <path d={isCollapsed ?
-            "M6 9l4 4 4-4" : // Down arrow when collapsed
-            "M14 11l-4-4-4 4"  // Up arrow when expanded
-          } stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          style={{
+            transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        >
+          <path
+            d="M3 6l5 5 5-5"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </button>
 
@@ -53,7 +65,7 @@ export function ConfigBar({ mode, onModeChange }: ConfigBarProps) {
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="Toggle settings menu"
       >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
         </svg>
       </button>

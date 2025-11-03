@@ -15,5 +15,5 @@
 
 /* When header is collapsed, reduce padding */
 .config-bar.collapsed ~ .main-content {
-  padding-top: 40px;
+  padding-top: 36px;
 }

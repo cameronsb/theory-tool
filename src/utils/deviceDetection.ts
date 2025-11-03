@@ -3,6 +3,11 @@
  * Handles both older iPads and newer iPadOS devices that masquerade as desktop
  */
 export function isIPad(): boolean {
+  // TEMPORARY: Force tablet mode for development
+  // TODO: Remove this override before production
+  return true;
+
+  /* Original detection logic (commented out for dev):
   const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
 
   // Check for explicit iPad user agent
@@ -22,6 +27,7 @@ export function isIPad(): boolean {
   }
 
   return false;
+  */
 }
 
 /**

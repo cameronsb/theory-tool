@@ -90,7 +90,7 @@
 
 /* Panel resize handle (for resizing bottom panel) */
 .panel-resize-handle {
-  height: 12px;
+  height: 16px;
   width: 100%;
   cursor: ns-resize;
   display: flex;
@@ -99,16 +99,19 @@
   position: relative;
   z-index: 10;
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   background: rgba(255, 255, 255, 0.08);
   border-top: 1px solid rgba(255, 255, 255, 0.15);
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.panel-resize-handle:hover {
-  background-color: rgba(102, 126, 234, 0.15);
-  border-top-color: rgba(102, 126, 234, 0.3);
-  border-bottom-color: rgba(102, 126, 234, 0.3);
+.panel-resize-handle:hover,
+.panel-resize-handle:active {
+  background-color: rgba(102, 126, 234, 0.2);
+  border-top-color: rgba(102, 126, 234, 0.4);
+  border-bottom-color: rgba(102, 126, 234, 0.4);
 }
 
 .panel-resize-handle.resizing {
@@ -118,24 +121,26 @@
 }
 
 .panel-resize-indicator {
-  width: 120px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 3px;
-  transition: all 0.2s ease;
+  width: 140px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.panel-resize-handle:hover .panel-resize-indicator {
-  width: 160px;
-  height: 5px;
-  background: rgba(102, 126, 234, 0.8);
-  box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
+.panel-resize-handle:hover .panel-resize-indicator,
+.panel-resize-handle:active .panel-resize-indicator {
+  width: 180px;
+  height: 6px;
+  background: rgba(102, 126, 234, 0.9);
+  box-shadow: 0 0 12px rgba(102, 126, 234, 0.5);
 }
 
 .panel-resize-handle.resizing .panel-resize-indicator {
-  width: 200px;
+  width: 220px;
   height: 6px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 0 12px rgba(102, 126, 234, 0.8);
+  box-shadow: 0 0 16px rgba(102, 126, 234, 0.8);
 }

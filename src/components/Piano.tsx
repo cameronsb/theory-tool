@@ -17,7 +17,7 @@ export function Piano({
   octaveCount = 2,
   showScaleDegrees = false
 }: PianoProps) {
-  const { state, audio, actions } = useMusic();
+  const { state, audio } = useMusic();
   const pianoRef = useRef<HTMLDivElement>(null);
   const [glissandoTouchId, setGlissandoTouchId] = useState<number | null>(null);
   const [lastPlayedKey, setLastPlayedKey] = useState<string | null>(null);
@@ -98,18 +98,6 @@ export function Piano({
 
   return (
     <div className="piano">
-      {/* In-scale colors toggle */}
-      <label className="in-scale-colors-control">
-        <input
-          type="checkbox"
-          checked={state.showInScaleColors}
-          onChange={actions.toggleInScaleColors}
-          className="in-scale-colors-checkbox"
-        />
-        <span className="in-scale-colors-text">
-          Highlight scale notes
-        </span>
-      </label>
 
       <div
         ref={pianoRef}

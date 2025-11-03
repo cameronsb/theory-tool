@@ -6,11 +6,13 @@
   background: rgba(150, 150, 150, 0.5);
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: box-shadow 0.2s ease, opacity 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: visible; /* Changed from hidden to allow dropdown to show */
   isolation: isolate; /* Create stacking context */
+  -webkit-tap-highlight-color: transparent; /* Remove iOS tap highlight */
+  touch-action: manipulation; /* Disable double-tap zoom */
 }
 
 .chord-card-main {
@@ -49,6 +51,8 @@
 
   /* Muted gray background */
   background: rgba(100, 100, 100, 0.5);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .chord-card-main {
