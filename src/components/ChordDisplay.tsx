@@ -34,7 +34,6 @@ const BORROWED_GROUPS = {
   },
 };
 
-type ViewMode = 'full' | 'compact';
 type LayoutMode = 'default' | 'sidebar';
 
 interface ChordDisplayProps {
@@ -50,8 +49,6 @@ export function ChordDisplay({ layout = 'default' }: ChordDisplayProps) {
   const diatonicSort = settings.ui.chordSort.diatonic;
   const borrowedSort = settings.ui.chordSort.borrowed;
 
-  const viewMode: ViewMode = 'full'; // Default to full (buttons mode)
-
   const diatonicChords = getScaleChords(key, mode);
   const borrowedChords = getBorrowedChords(key, mode);
 
@@ -64,7 +61,7 @@ export function ChordDisplay({ layout = 'default' }: ChordDisplayProps) {
   };
 
   // Determine variation mode based on layout
-  const effectiveVariationMode = layout === 'sidebar' ? 'select' : (viewMode === 'compact' ? 'select' : 'buttons');
+  const effectiveVariationMode = layout === 'sidebar' ? 'select' : 'buttons';
 
   // Render chord cards
   const renderChordCard = (chord: typeof diatonicChords[0], isDiatonic: boolean) => (

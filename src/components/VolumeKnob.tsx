@@ -71,6 +71,7 @@ export function VolumeKnob({
         document.body.style.userSelect = '';
       };
     }
+    return undefined;
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
   return (

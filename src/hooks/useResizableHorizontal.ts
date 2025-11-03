@@ -66,6 +66,7 @@ export function useResizableHorizontal({
         document.body.style.cursor = '';
       };
     }
+    return undefined;
   }, [isResizing, handleMouseMove, handleMouseUp]);
 
   return {

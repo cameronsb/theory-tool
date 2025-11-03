@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useMusic } from '../hooks/useMusic';
 import { VolumeKnob } from './VolumeKnob';
 import './VolumeControl.css';
