@@ -1,9 +1,9 @@
 /**
  * UI Components Index
- * 
+ *
  * Reusable design system components.
  * Import from here for convenience.
- * 
+ *
  * @example
  * ```typescript
  * import { ResizeHandle, TabGroup } from '@/components/ui';

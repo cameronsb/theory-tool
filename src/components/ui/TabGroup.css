@@ -1,6 +1,6 @@
 /**
  * TabGroup Styles
- * 
+ *
  * Unified styling for tab groups across the app.
  * Supports two variants: toggle (compact) and tabs (traditional).
  */
@@ -101,7 +101,7 @@
     font-size: 12px;
     min-width: 60px;
   }
-  
+
   .tab-group-tabs .tab-button {
     padding: 10px 18px;
     font-size: 13px;

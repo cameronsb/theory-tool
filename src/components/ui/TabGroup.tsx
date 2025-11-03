@@ -1,9 +1,9 @@
 /**
  * TabGroup Component
- * 
+ *
  * Unified tab/toggle group for consistent tab UI across the app.
  * Supports both toggle mode (Learn/Build) and tab mode (Piano/Drums).
- * 
+ *
  * @example
  * ```typescript
  * <TabGroup
@@ -31,26 +31,26 @@ export interface Tab<T = string> {
 export interface TabGroupProps<T = string> {
   /** Visual style variant */
   variant?: TabVariant;
-  
+
   /** Currently selected tab value */
   value: T;
-  
+
   /** Change handler */
   onChange: (value: T) => void;
-  
+
   /** Tab options */
   tabs: Tab<T>[];
-  
+
   /** Additional className */
   className?: string;
-  
+
   /** Accessible label */
   'aria-label'?: string;
 }
 
 /**
  * Unified tab group component
- * 
+ *
  * Provides consistent tab/toggle UI with two visual variants:
  * - `toggle`: Compact toggle buttons with gradient active state (for mode switching)
  * - `tabs`: Traditional tabs with bottom border active state (for view switching)
@@ -64,7 +64,7 @@ export function TabGroup<T extends string = string>({
   'aria-label': ariaLabel,
 }: TabGroupProps<T>) {
   return (
-    <div 
+    <div
       className={`tab-group tab-group-${variant} ${className}`}
       role="tablist"
       aria-label={ariaLabel}
