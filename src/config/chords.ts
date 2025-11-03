@@ -9,25 +9,15 @@
  * This file enables easy customization of chord theory and harmonic groupings.
  */
 
-/**
- * Chord modifier interface
- * Defines how modifiers transform chord intervals
- */
-export interface ChordModifier {
-  label: string;
-  intervalToAdd?: number;           // Add single interval (e.g., 7th chord)
-  intervalsToAdd?: number[];        // Add multiple intervals (e.g., 9th, 11th, 13th chords)
-  intervalToRemove?: number;        // Remove specific interval
-  replaceWith?: number[];           // Replace entire chord structure (e.g., sus, dim)
-}
+import type { ChordModifier } from '../types/chords';
 
 /**
  * Chord modifiers for harmonic variations
- * 
+ *
  * Organized in 2 rows of 6 for complete harmonic palette:
  * - Row 1: Seventh chords, suspended, and altered triads
  * - Row 2: Extended harmony and added tones
- * 
+ *
  * Intervals are in semitones from root (0=root, 12=octave)
  */
 export const CHORD_MODIFIERS: ChordModifier[] = [
@@ -49,16 +39,8 @@ export const CHORD_MODIFIERS: ChordModifier[] = [
 ];
 
 /**
- * Chord group definition
- */
-export interface ChordGroup {
-  label: string;      // Display label for the group
-  numerals: string[]; // Roman numerals in this group
-}
-
-/**
  * Diatonic chord groups by harmonic function
- * 
+ *
  * Groups chords by their role in progressions:
  * - Tonic: Stable, home, resolution
  * - Subdominant: Departure, movement away
@@ -67,46 +49,46 @@ export interface ChordGroup {
  */
 export const DIATONIC_GROUPS = {
   major: {
-    tonic: { 
-      label: 'Tonic (Stable, Home)', 
-      numerals: ['I', 'vi'] 
+    tonic: {
+      label: 'Tonic (Stable, Home)',
+      numerals: ['I', 'vi']
     },
-    subdominant: { 
-      label: 'Subdominant (Departure)', 
-      numerals: ['ii', 'IV'] 
+    subdominant: {
+      label: 'Subdominant (Departure)',
+      numerals: ['ii', 'IV']
     },
-    dominant: { 
-      label: 'Dominant (Tension)', 
-      numerals: ['V', 'vii°'] 
+    dominant: {
+      label: 'Dominant (Tension)',
+      numerals: ['V', 'vii°']
     },
-    mediant: { 
-      label: 'Mediant (Transitional)', 
-      numerals: ['iii'] 
+    mediant: {
+      label: 'Mediant (Transitional)',
+      numerals: ['iii']
     },
   },
   minor: {
-    tonic: { 
-      label: 'Tonic (Stable, Home)', 
-      numerals: ['i', 'VI'] 
+    tonic: {
+      label: 'Tonic (Stable, Home)',
+      numerals: ['i', 'VI']
     },
-    subdominant: { 
-      label: 'Subdominant (Departure)', 
-      numerals: ['ii°', 'iv'] 
+    subdominant: {
+      label: 'Subdominant (Departure)',
+      numerals: ['ii°', 'iv']
     },
-    dominant: { 
-      label: 'Dominant (Tension)', 
-      numerals: ['v', 'VII'] 
+    dominant: {
+      label: 'Dominant (Tension)',
+      numerals: ['v', 'VII']
     },
-    mediant: { 
-      label: 'Mediant (Transitional)', 
-      numerals: ['III'] 
+    mediant: {
+      label: 'Mediant (Transitional)',
+      numerals: ['III']
     },
   },
 } as const;
 
 /**
  * Borrowed chord groups by emotional quality
- * 
+ *
  * Borrowed chords (modal interchange) create specific moods:
  * - Darkening: Add melancholy or tension
  * - Brightening: Add brightness or lift
@@ -114,23 +96,23 @@ export const DIATONIC_GROUPS = {
  */
 export const BORROWED_GROUPS = {
   major: {
-    darkening: { 
-      label: 'Darkening/Emotional', 
-      numerals: ['iv', 'bIII'] 
+    darkening: {
+      label: 'Darkening/Emotional',
+      numerals: ['iv', 'bIII']
     },
-    brightening: { 
-      label: 'Brightening/Modal', 
-      numerals: ['bVI', 'bVII'] 
+    brightening: {
+      label: 'Brightening/Modal',
+      numerals: ['bVI', 'bVII']
     },
   },
   minor: {
-    brightening: { 
-      label: 'Brightening/Uplifting', 
-      numerals: ['IV', 'VI', 'III'] 
+    brightening: {
+      label: 'Brightening/Uplifting',
+      numerals: ['IV', 'VI', 'III']
     },
-    resolving: { 
-      label: 'Resolving', 
-      numerals: ['VII'] 
+    resolving: {
+      label: 'Resolving',
+      numerals: ['VII']
     },
   },
 } as const;

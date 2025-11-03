@@ -1,13 +1,13 @@
 /**
  * Music Configuration
- * 
+ *
  * Centralized configuration for all music theory constants including:
  * - Notes and scales
  * - Piano ranges
  * - Key groupings (sharp vs flat keys)
  * - Default song parameters
  * - MIDI constants
- * 
+ *
  * This file enables easy music theory customization.
  */
 
@@ -42,7 +42,7 @@ export const KEY_GROUPS = {
    * These keys have sharps in their key signatures
    */
   sharpKeys: ['C', 'G', 'D', 'A', 'E', 'B', 'F#'] as Note[],
-  
+
   /**
    * Flat keys: Use flat enharmonics (F, A#/Bb, D#/Eb, G#/Ab, C#/Db)
    * These keys have flats in their key signatures
@@ -74,7 +74,7 @@ export const PIANO_RANGES = {
     endMidi: 108,   // C8
     octaves: 7.25,
   },
-  
+
   /**
    * 2 octaves centered on middle C
    * C4 to B5 (default for app)
@@ -85,7 +85,7 @@ export const PIANO_RANGES = {
     endMidi: 83,    // B5
     octaves: 2,
   },
-  
+
   /**
    * 3 octaves for expanded range
    * C3 to B5
@@ -96,7 +96,7 @@ export const PIANO_RANGES = {
     endMidi: 83,    // B5
     octaves: 3,
   },
-  
+
   /**
    * 4 octaves for wider range
    * C3 to B6
@@ -107,7 +107,7 @@ export const PIANO_RANGES = {
     endMidi: 95,    // B6
     octaves: 4,
   },
-  
+
   /**
    * 5 octaves for very wide range
    * C2 to B6
@@ -128,7 +128,7 @@ export const DEFAULT_SONG_CONFIG = {
    * Default tempo in beats per minute
    */
   tempo: 120,
-  
+
   /**
    * Default time signature (4/4)
    */
@@ -136,17 +136,17 @@ export const DEFAULT_SONG_CONFIG = {
     numerator: 4,
     denominator: 4,
   },
-  
+
   /**
    * Default key (C major)
    */
   key: 'C' as Note,
-  
+
   /**
    * Default mode (major scale)
    */
   mode: 'major' as Mode,
-  
+
   /**
    * Default song name
    */
@@ -162,18 +162,18 @@ export const MIDI_NOTES = {
    * Middle C (C4) - standard reference point
    */
   MIDDLE_C: 60,
-  
+
   /**
    * A4 (concert A) - standard tuning reference
    */
   A4: 69,
-  
+
   /**
    * Piano range boundaries
    */
   PIANO_MIN: 21,  // A0
   PIANO_MAX: 108, // C8
-  
+
   /**
    * MIDI value range
    */
@@ -189,12 +189,12 @@ export const OCTAVE = {
    * Semitones per octave
    */
   SEMITONES: 12,
-  
+
   /**
    * Notes per octave (including all chromatic notes)
    */
   NOTES: 12,
-  
+
   /**
    * Frequency ratio between octaves
    */

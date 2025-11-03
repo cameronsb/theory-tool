@@ -6,7 +6,7 @@
  * 
  * @example
  * ```typescript
- * import { COLORS, CHORD_MODIFIERS, DRUM_SOUNDS, NOTES } from '@/config';
+ * import { COLORS, CHORD_MODIFIERS, DRUM_SOUNDS, NOTES } from '../config';
  * ```
  */
 
@@ -21,4 +21,8 @@ export * from './audio';
 
 // Re-export all music configuration
 export * from './music';
+
+// Re-export types for convenience
+export type { ChordModifier, ChordGroup } from '../types/chords';
+export type { AudioEngine, PlaybackState, DrumSynthConfig, VolumeSettings } from '../types/audio';
 

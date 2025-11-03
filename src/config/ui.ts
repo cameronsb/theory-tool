@@ -1,13 +1,13 @@
 /**
  * UI Configuration
- * 
+ *
  * Centralized configuration for all UI-related constants including:
  * - Color tokens
  * - Breakpoints
  * - Size constraints
  * - Spacing system
  * - Animation timings
- * 
+ *
  * This file enables easy theme customization and consistent design system.
  */
 
@@ -22,18 +22,18 @@ export const COLORS = {
     surface: '#242424',
     hover: '#2a2a2a',
   },
-  
+
   // Text colors
   text: {
     primary: '#e0e0e0',
     secondary: '#999',
   },
-  
+
   // Border colors
   border: {
     default: '#333',
   },
-  
+
   // Interactive colors
   interactive: {
     accent: '#4a9eff',
@@ -43,7 +43,7 @@ export const COLORS = {
     success: '#4aff4a',
     warning: '#ffaa4a',
   },
-  
+
   // Gradient colors
   gradients: {
     // Purple gradient for primary elements
@@ -69,7 +69,7 @@ export const COLORS = {
       css: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)',
     },
   },
-  
+
   // Scrollbar colors
   scrollbar: {
     thumb: 'rgba(102, 126, 234, 0.6)',
@@ -110,30 +110,30 @@ export const SIZES = {
     max: 600,
     default: 420,
   },
-  
+
   // Learn mode piano height (tablet layout)
   learnTabletPiano: {
     min: 200,
     max: 500,
     default: 300,
   },
-  
+
   // Builder panel height (bottom panel in build mode)
   builderPanel: {
     min: 150,
     max: 600,
     default: 250,
   },
-  
+
   // Chord palette width
   chordPalette: {
     width: 280,
     minWidth: 280,
   },
-  
+
   // Touch target minimum (iOS guideline)
   minTouchTarget: 44,
-  
+
   // ConfigBar heights
   configBar: {
     normal: 56,
@@ -163,7 +163,7 @@ export const TRANSITIONS = {
   medium: 250,
   slow: 300,
   verySlow: 500,
-  
+
   // Easing functions
   easing: {
     standard: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -202,7 +202,7 @@ export const SHADOWS = {
   sm: '0 2px 6px rgba(0, 0, 0, 0.15)',
   md: '0 4px 12px rgba(0, 0, 0, 0.4)',
   lg: '0 8px 24px rgba(0, 0, 0, 0.6)',
-  
+
   // Colored shadows for interactive elements
   accent: '0 4px 12px rgba(102, 126, 234, 0.4)',
   danger: '0 4px 12px rgba(245, 87, 108, 0.4)',
