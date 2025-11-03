@@ -2,37 +2,10 @@ import { useMusic } from '../hooks/useMusic';
 import { useSettings } from '../hooks/useSettings';
 import { getScaleChords, getBorrowedChords } from '../utils/musicTheory';
 import { ChordCard } from './ChordCard';
+import { DIATONIC_GROUPS, BORROWED_GROUPS } from '../config';
 import './ChordDisplay.css';
 
 type SortMode = 'default' | 'grouped';
-
-// Functional groupings for diatonic chords by harmonic function
-const DIATONIC_GROUPS = {
-  major: {
-    tonic: { label: 'Tonic (Stable, Home)', numerals: ['I', 'vi'] },
-    subdominant: { label: 'Subdominant (Departure)', numerals: ['ii', 'IV'] },
-    dominant: { label: 'Dominant (Tension)', numerals: ['V', 'vii°'] },
-    mediant: { label: 'Mediant (Transitional)', numerals: ['iii'] },
-  },
-  minor: {
-    tonic: { label: 'Tonic (Stable, Home)', numerals: ['i', 'VI'] },
-    subdominant: { label: 'Subdominant (Departure)', numerals: ['ii°', 'iv'] },
-    dominant: { label: 'Dominant (Tension)', numerals: ['v', 'VII'] },
-    mediant: { label: 'Mediant (Transitional)', numerals: ['III'] },
-  },
-};
-
-// Emotional groupings for borrowed chords
-const BORROWED_GROUPS = {
-  major: {
-    darkening: { label: 'Darkening/Emotional', numerals: ['iv', 'bIII'] },
-    brightening: { label: 'Brightening/Modal', numerals: ['bVI', 'bVII'] },
-  },
-  minor: {
-    brightening: { label: 'Brightening/Uplifting', numerals: ['IV', 'VI', 'III'] },
-    resolving: { label: 'Resolving', numerals: ['VII'] },
-  },
-};
 
 type LayoutMode = 'default' | 'sidebar' | 'tiles' | 'diatonic-only' | 'borrowed-only';
 

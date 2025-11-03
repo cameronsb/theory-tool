@@ -6,6 +6,7 @@ import { useMusic } from '../hooks/useMusic';
 import { useResizableHorizontal } from '../hooks/useResizableHorizontal';
 import { useResizable } from '../hooks/useResizable';
 import { isIPad } from '../utils/deviceDetection';
+import { SIZES } from '../config';
 import './LearnMode.css';
 
 export function LearnMode() {
@@ -35,8 +36,8 @@ export function LearnMode() {
 
   const { width: sidebarWidth, isResizing, handleMouseDown, handleTouchStart, setWidth } = useResizableHorizontal({
     initialWidth: settings.ui.learnSidebar.width,
-    minWidth: 280,
-    maxWidth: 600,
+    minWidth: SIZES.learnSidebar.min,
+    maxWidth: SIZES.learnSidebar.max,
     onResize: handleResize,
   });
 
@@ -58,8 +59,8 @@ export function LearnMode() {
     setHeight: setPianoHeight
   } = useResizable({
     initialHeight: settings.ui.learnTabletPiano.height,
-    minHeight: 200,
-    maxHeight: 500,
+    minHeight: SIZES.learnTabletPiano.min,
+    maxHeight: SIZES.learnTabletPiano.max,
     onResize: handlePianoResize,
   });
 

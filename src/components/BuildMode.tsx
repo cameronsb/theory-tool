@@ -6,6 +6,7 @@ import { ChordPalette } from './ChordPalette';
 import { ChordTimeline } from './ChordTimeline';
 import { DrumTrack } from './DrumTrack';
 import { Piano } from './Piano';
+import { SIZES } from '../config';
 import './BuildMode.css';
 
 type BottomView = 'piano' | 'drums';
@@ -36,8 +37,8 @@ export function BuildMode() {
   // Resizable bottom panel
   const { height: bottomHeight, isResizing, handleMouseDown, handleTouchStart, setHeight } = useResizable({
     initialHeight,
-    minHeight: 150,
-    maxHeight: 600,
+    minHeight: SIZES.builderPanel.min,
+    maxHeight: SIZES.builderPanel.max,
     onResize: handleResize,
   });
 
