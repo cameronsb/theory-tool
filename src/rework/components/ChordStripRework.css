@@ -127,51 +127,73 @@
   grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
 }
 
-/* Chord detail panel - appears below tabs when chord is active */
+/* Chord detail panel - compact layout with piano preview */
 .chord-detail-panel {
   background: var(--surface-elevated, #2a2d3e);
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px;
   margin-top: 8px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
 }
 
-.chord-detail-header {
-  margin-bottom: 12px;
+.chord-detail-left {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chord-detail-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
 }
 
 .chord-detail-title {
-  margin: 0;
-  font-size: 14px;
+  margin: 0 0 4px 0;
+  font-size: 11px;
   font-weight: 600;
-  color: var(--text-primary, #e8e9f0);
+  color: var(--text-secondary, #a0a5b8);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-/* Modifier button grid - 6 columns, 2 rows */
+/* Compact modifier button grid - square buttons */
 .chord-modifier-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
+  gap: 6px;
 }
 
 .chord-modifier-btn {
-  min-width: 56px;
-  min-height: 32px;
-  padding: 6px 8px;
+  aspect-ratio: 1;
+  min-width: 44px;
+  padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary, #e8e9f0);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chord-modifier-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.chord-modifier-btn:active {
+  transform: scale(0.95);
 }
 
 .chord-modifier-btn.active {
@@ -180,7 +202,35 @@
   color: #000;
 }
 
+/* Piano preview in detail panel */
+.chord-detail-piano-preview {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chord-detail-piano-title {
+  margin: 0 0 8px 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #a0a5b8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chord-preview-piano-container {
+  height: 80px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
 @media (max-width: 834px) {
+  .chord-detail-panel {
+    flex-direction: column;
+  }
+
   .chord-modifier-grid {
     grid-template-columns: repeat(4, 1fr);
   }

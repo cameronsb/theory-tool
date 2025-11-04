@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useMusic } from '../../hooks/useMusic';
 import { useSettings } from '../../hooks/useSettings';
-import { getScaleChords, getBorrowedChords, getChordFrequencies } from '../../utils/musicTheory';
+import { getScaleChords, getBorrowedChords, getChordFrequencies, NOTES } from '../../utils/musicTheory';
 import { ChordTabRework } from './ChordTabRework';
+import { Piano } from '../../components/Piano';
 import { CHORD_MODIFIERS } from '../../config/chords';
 import type { Note } from '../../types/music';
 import './ChordStripRework.css';
@@ -196,22 +197,40 @@ export function ChordStripRework({ layout = 'default' }: ChordStripReworkProps) 
         </div>
       )}
 
-      {/* Detail panel for active chord - shows modifiers */}
+      {/* Detail panel for active chord - compact layout with piano preview */}
       {activeChord && (
         <div className="chord-detail-panel">
-          <div className="chord-detail-header">
-            <h4 className="chord-detail-title">Chord Variations</h4>
+          <div className="chord-detail-left">
+            <h4 className="chord-detail-title">Variations</h4>
+            <div className="chord-modifier-grid">
+              {CHORD_MODIFIERS.map(modifier => (
+                <button
+                  key={modifier.label}
+                  className={`chord-modifier-btn ${activeModifiers.has(modifier.label) ? 'active' : ''}`}
+                  onClick={() => applyModifier(modifier.label, activeChord.rootNote, activeChord.intervals)}
+                  title={modifier.label}
+                >
+                  {modifier.label}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="chord-modifier-grid">
-            {CHORD_MODIFIERS.map(modifier => (
-              <button
-                key={modifier.label}
-                className={`chord-modifier-btn ${activeModifiers.has(modifier.label) ? 'active' : ''}`}
-                onClick={() => applyModifier(modifier.label, activeChord.rootNote, activeChord.intervals)}
-              >
-                {modifier.label}
-              </button>
-            ))}
+          <div className="chord-detail-right">
+            <div className="chord-detail-piano-preview">
+              <h5 className="chord-detail-piano-title">
+                {activeChord.rootNote}{activeChord.numeral}
+                {activeModifiers.size > 0 && ` (${Array.from(activeModifiers).join(', ')})`}
+              </h5>
+              <div className="chord-preview-piano-container">
+                <Piano
+                  startOctave={4}
+                  octaveCount={1}
+                  showScaleDegrees={true}
+                  flexible={false}
+                  adjustHeight={false}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
