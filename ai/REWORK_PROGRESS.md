@@ -28,8 +28,8 @@
 - [x] Both discoverable within 30 seconds
 
 ### 🚧 Phase 4: Visual Polish (Specs 1.4-1.7)
-- [x] Replace emoji icons with proper icons
-- [x] Convert rotary volume knobs to sliders
+- [⚠️] Replace emoji icons with proper icons - **NEEDS REWORK**
+- [⚠️] Convert rotary volume knobs to sliders - **NEEDS REWORK**
 - [ ] Persistent playback controls (transport bar)
 - [ ] Tempo/BPM editor UI
 
@@ -120,6 +120,60 @@
 - `src/components/DrumTrack.tsx`
 
 **Status:** Phase 4 significantly complete (Specs 1.4 & 1.5 done)
+
+### ⚠️ 2025-11-03: Session 4 - VISUAL ISSUES IDENTIFIED
+
+**Issues Found:**
+- **Icons (Spec 1.4):** Hand-coded SVG icons look unprofessional and inconsistent
+- **Volume Sliders (Spec 1.5):** VolumeSlider.css has major visual/styling bugs, sliders look awful
+
+**Required Fixes:**
+1. Replace hand-coded SVG icons with Lucide React icons (install via NPM)
+2. Audit and fix VolumeSlider component styling issues
+3. Ensure professional appearance matching modern UI standards
+
+**Status:** Phase 4 NEEDS REWORK - visual quality unacceptable
+
+---
+
+## 🔧 Next Agent Tasks
+
+**Priority: Fix Visual Quality Issues (Specs 1.4 & 1.5)**
+
+### Task 1: Replace SVG Icons with Lucide Icons
+1. Install lucide-react: `npm install lucide-react`
+2. Replace hand-coded SVGs in ChordTimeline.tsx:
+   - Play: `<Play />` from lucide-react
+   - Pause: `<Pause />` from lucide-react
+   - Loop: `<Repeat />` from lucide-react
+3. Import: `import { Play, Pause, Repeat } from 'lucide-react'`
+4. Adjust icon size prop (16-20px recommended)
+
+### Task 2: Fix Volume Slider Styling
+1. Open VolumeSlider.css and audit all styles
+2. Fix visual bugs causing "awful" appearance
+3. Test vertical sliders in ChordTimeline and DrumTrack
+4. Ensure sliders look professional and work smoothly
+5. Check CSS variables are defined (--text, --surface-bg, --border, etc.)
+6. Consider simplifying styling if overly complex
+
+### Task 3: Visual QA
+- Test in browser at http://localhost:5182/
+- Switch to Build mode to see ChordTimeline
+- Verify icons are crisp and consistent
+- Verify sliders are usable and attractive
+- Compare to legacy version (?legacy=true) if needed
+
+**Files to Modify:**
+- src/components/ChordTimeline.tsx (icons)
+- src/components/VolumeSlider.css (styling fixes)
+- package.json (add lucide-react dependency)
+
+**Success Criteria:**
+- Icons look professional and consistent
+- Volume sliders function smoothly with clean appearance
+- No visual bugs or styling issues
+- TypeScript passes, dev server runs without errors
 
 ---
 
