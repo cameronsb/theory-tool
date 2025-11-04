@@ -93,19 +93,27 @@ export function LearnModeRework() {
 
         {/* Piano at bottom - fixed height, resizable */}
         <div className="tablet-piano-container" style={{ height: pianoHeight }}>
-          {/* In-scale colors toggle */}
-          <label className="tablet-piano-control">
-            <input
-              type="checkbox"
-              checked={state.showInScaleColors}
-              onChange={actions.toggleInScaleColors}
-              className="piano-control-checkbox"
-              title="Show scale notes on piano"
-            />
-            <span className="piano-control-text">
-              Scale
-            </span>
-          </label>
+          {/* Piano controls - top right floating */}
+          <div className="piano-floating-controls">
+            <label className="piano-control-toggle" title="Show scale notes on piano">
+              <input
+                type="checkbox"
+                checked={state.showInScaleColors}
+                onChange={actions.toggleInScaleColors}
+                className="control-checkbox"
+              />
+              <span className="control-label">Scale</span>
+            </label>
+            <label className="piano-control-toggle" title="Highlight selected chord on piano">
+              <input
+                type="checkbox"
+                checked={state.keyboardPreviewEnabled}
+                onChange={actions.toggleKeyboardPreview}
+                className="control-checkbox"
+              />
+              <span className="control-label">Highlight</span>
+            </label>
+          </div>
           <Piano startOctave={4} octaveCount={2} showScaleDegrees={true} adjustHeight={true} />
         </div>
       </div>

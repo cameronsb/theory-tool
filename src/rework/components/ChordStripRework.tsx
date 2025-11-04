@@ -13,7 +13,7 @@ interface ChordStripReworkProps {
 
 export function ChordStripRework({ layout = 'default' }: ChordStripReworkProps) {
   const { state, audio, actions } = useMusic();
-  const { settings } = useSettings();
+  const { settings, setShowMiniPreview } = useSettings();
   const { key, mode } = state.song;
   const [showBorrowed, setShowBorrowed] = useState(false);
   const [activeChordIndex, setActiveChordIndex] = useState<number | null>(null);
@@ -138,12 +138,23 @@ export function ChordStripRework({ layout = 'default' }: ChordStripReworkProps) 
         <h3 className="chord-strip-header-title">
           {key} {mode} Scale Chords
         </h3>
-        <button
-          className={`borrowed-toggle-btn ${showBorrowed ? 'active' : ''}`}
-          onClick={() => setShowBorrowed(!showBorrowed)}
-        >
-          Borrowed ({borrowedChords.length})
-        </button>
+        <div className="chord-strip-header-controls">
+          <label className="header-toggle">
+            <input
+              type="checkbox"
+              checked={settings.ui.piano.showMiniPreview}
+              onChange={(e) => setShowMiniPreview(e.target.checked)}
+              className="toggle-checkbox"
+            />
+            <span className="toggle-label">Key Preview</span>
+          </label>
+          <button
+            className={`borrowed-toggle-btn ${showBorrowed ? 'active' : ''}`}
+            onClick={() => setShowBorrowed(!showBorrowed)}
+          >
+            Borrowed ({borrowedChords.length})
+          </button>
+        </div>
       </div>
 
       {/* Horizontal chord tabs - all 7 diatonic chords visible */}

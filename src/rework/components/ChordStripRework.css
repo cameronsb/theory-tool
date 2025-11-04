@@ -23,6 +23,37 @@
   color: var(--text-primary, #e8e9f0);
 }
 
+.chord-strip-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.header-toggle:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.toggle-checkbox {
+  cursor: pointer;
+}
+
+.toggle-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary, #a0a5b8);
+  user-select: none;
+}
+
 .borrowed-toggle-btn {
   padding: 6px 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);

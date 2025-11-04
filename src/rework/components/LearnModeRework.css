@@ -87,36 +87,43 @@
   flex-direction: column;
 }
 
-.tablet-piano-control {
+.piano-floating-controls {
   position: absolute;
   top: 12px;
   right: 12px;
   z-index: 10;
   display: flex;
-  align-items: center;
   gap: 8px;
+}
+
+.piano-control-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   cursor: pointer;
   transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
 }
 
-.tablet-piano-control:hover {
-  background: rgba(0, 0, 0, 0.7);
-  border-color: rgba(255, 255, 255, 0.2);
+.piano-control-toggle:hover {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.piano-control-checkbox {
+.control-checkbox {
   cursor: pointer;
 }
 
-.piano-control-text {
+.control-label {
   color: var(--text-primary, #e8e9f0);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   user-select: none;
+  white-space: nowrap;
 }
 
 /* Desktop sidebar layout */

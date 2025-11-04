@@ -22,10 +22,10 @@
 - [x] Piano preview integration
 - [x] Flexible layout with working resize handle
 
-### 🔄 Phase 3: Surface Hidden Settings (Spec 1.2)
-- [ ] Keyboard preview toggle (visible in chord strip header)
-- [ ] Piano highlighting toggle (floating on piano)
-- [ ] Both discoverable within 30 seconds
+### ✅ Phase 3: Surface Hidden Settings (Spec 1.2)
+- [x] Keyboard preview toggle (visible in chord strip header)
+- [x] Piano highlighting toggle (floating on piano)
+- [x] Both discoverable within 30 seconds
 
 ### 📋 Phase 4: Visual Polish (Specs 1.4-1.7)
 - [ ] Replace emoji icons with proper icons
@@ -74,7 +74,12 @@
 - `src/rework/components/ChordTabRework.tsx`
 - `src/rework/components/ChordTabRework.css`
 
-**Status:** Phase 2 complete, ready for Phase 3
+**Surfaced Hidden Settings (Spec 1.2):**
+- Added "Key Preview" toggle to chord strip header
+- Added floating controls on piano ("Scale" and "Highlight")
+- Both settings now visible and discoverable within 30 seconds
+
+**Status:** Phase 3 complete, ready for Phase 4
 
 ---
 
