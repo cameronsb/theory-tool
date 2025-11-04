@@ -3,7 +3,6 @@ import { useMusic } from '../../hooks/useMusic';
 import { useSettings } from '../../hooks/useSettings';
 import { getScaleChords, getBorrowedChords, getChordFrequencies, NOTES } from '../../utils/musicTheory';
 import { ChordTabRework } from './ChordTabRework';
-import { Piano } from '../../components/Piano';
 import { CHORD_MODIFIERS } from '../../config/chords';
 import type { Note } from '../../types/music';
 import './ChordStripRework.css';
@@ -26,6 +25,62 @@ export function ChordStripRework({ layout = 'default' }: ChordStripReworkProps) 
 
   const allChords = [...diatonicChords, ...borrowedChords];
   const activeChord = activeChordIndex !== null ? allChords[activeChordIndex] : null;
+
+  // Mini keyboard preview for detail panel
+  const MiniKeyboardPreview = ({ rootNote, intervals }: { rootNote: Note; intervals: number[] }) => {
+    const whiteKeyPositions = [0, 2, 4, 5, 7, 9, 11]; // C, D, E, F, G, A, B
+    const blackKeyPositions = [
+      { key: 1, x: 5.5 },    // C#
+      { key: 3, x: 12 },     // D#
+      { key: 6, x: 25 },     // F#
+      { key: 8, x: 31.5 },   // G#
+      { key: 10, x: 38 }     // A#
+    ];
+
+    const rootIndex = NOTES.indexOf(rootNote);
+    const activeKeys = new Set<number>();
+    intervals.forEach(interval => {
+      const chromaticPosition = (rootIndex + interval) % 12;
+      activeKeys.add(chromaticPosition);
+    });
+
+    const isNoteActive = (chromaticKey: number) => activeKeys.has(chromaticKey);
+
+    return (
+      <svg viewBox="0 0 45 15" className="detail-keyboard-preview">
+        {/* White Keys */}
+        {whiteKeyPositions.map((keyNum, idx) => {
+          const active = isNoteActive(keyNum);
+          const x = idx * 6.5;
+          return (
+            <rect
+              key={keyNum}
+              x={x}
+              y="0"
+              width="6"
+              height="15"
+              className={`mini-white-key ${active ? "active" : ""}`}
+            />
+          );
+        })}
+
+        {/* Black Keys */}
+        {blackKeyPositions.map(({ key, x }) => {
+          const active = isNoteActive(key);
+          return (
+            <rect
+              key={key}
+              x={x}
+              y="0"
+              width="3"
+              height="9"
+              className={`mini-black-key ${active ? "active" : ""}`}
+            />
+          );
+        })}
+      </svg>
+    );
+  };
 
   const handleChordActivate = (index: number, baseIntervals: number[]) => {
     setActiveChordIndex(index);
@@ -217,19 +272,7 @@ export function ChordStripRework({ layout = 'default' }: ChordStripReworkProps) 
           </div>
           <div className="chord-detail-right">
             <div className="chord-detail-piano-preview">
-              <h5 className="chord-detail-piano-title">
-                {activeChord.rootNote}{activeChord.numeral}
-                {activeModifiers.size > 0 && ` (${Array.from(activeModifiers).join(', ')})`}
-              </h5>
-              <div className="chord-preview-piano-container">
-                <Piano
-                  startOctave={3}
-                  octaveCount={2}
-                  showScaleDegrees={true}
-                  flexible={false}
-                  adjustHeight={true}
-                />
-              </div>
+              <MiniKeyboardPreview rootNote={activeChord.rootNote} intervals={currentIntervals} />
             </div>
           </div>
         </div>

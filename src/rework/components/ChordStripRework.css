@@ -202,36 +202,21 @@
   color: #000;
 }
 
-/* Piano preview in detail panel */
+/* SVG keyboard preview in detail panel */
 .chord-detail-piano-preview {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 6px;
-  padding: 12px;
+  padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.chord-detail-piano-title {
-  margin: 0 0 8px 0;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-secondary, #a0a5b8);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.chord-preview-piano-container {
-  height: 70px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-/* Scale down piano keys in preview */
-.chord-preview-piano-container .piano {
-  transform: scale(0.7);
-  transform-origin: top left;
-  width: 142.857%; /* 100 / 0.7 to compensate for scale */
-  height: 142.857%;
+.detail-keyboard-preview {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
 }
 
 @media (max-width: 834px) {
