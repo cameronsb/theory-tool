@@ -31,9 +31,12 @@
 .volume-controls {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 4px;
     padding-left: 16px;
     border-left: 1px solid rgba(255, 255, 255, 0.15);
+    min-width: 180px;
+    /* helpful for horizontal sliders */
+    flex-direction: column;
 }
 
 .timeline-header h3 {

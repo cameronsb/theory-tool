@@ -418,7 +418,7 @@ interface MusicContextType {
         clearProgression: () => void;
         updateChordDuration: (id: string, duration: number) => void;
         toggleScaleView: () => void;
-        toggleKeyboardPreview: () => void;
+        toggleChordHighlight: () => void;
         toggleInScaleColors: () => void;
         setPianoRange: (startMidi: number, endMidi: number) => void;
         setPlaybackPlaying: (playing: boolean) => void;
@@ -567,7 +567,7 @@ export function MusicProvider({ children }: MusicProviderProps) {
         dispatch({ type: "TOGGLE_SCALE_VIEW" });
     }, []);
 
-    const toggleKeyboardPreview = useCallback(() => {
+    const toggleChordHighlight = useCallback(() => {
         const newValue = !state.keyboardPreviewEnabled;
         dispatch({ type: "TOGGLE_KEYBOARD_PREVIEW" });
         setKeyboardPreviewEnabled(newValue);
@@ -658,7 +658,7 @@ export function MusicProvider({ children }: MusicProviderProps) {
             clearProgression,
             updateChordDuration,
             toggleScaleView,
-            toggleKeyboardPreview,
+            toggleChordHighlight,
             toggleInScaleColors,
             setPianoRange,
             setPlaybackPlaying,

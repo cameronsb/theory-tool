@@ -108,10 +108,10 @@ export function LearnModeRework() {
               <input
                 type="checkbox"
                 checked={state.keyboardPreviewEnabled}
-                onChange={actions.toggleKeyboardPreview}
+                onChange={actions.toggleChordHighlight}
                 className="control-checkbox"
               />
-              <span className="control-label">Highlight</span>
+              <span className="control-label">Chord</span>
             </label>
           </div>
           <Piano startOctave={4} octaveCount={2} showScaleDegrees={true} adjustHeight={true} />

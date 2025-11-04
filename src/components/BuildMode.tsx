@@ -46,8 +46,7 @@ export function BuildMode() {
   useEffect(() => {
     const rememberedHeight = settings.ui.builderPanel.rememberedHeights[bottomView];
     setHeight(rememberedHeight);
-    setBuilderPanelHeight(rememberedHeight);
-  }, [bottomView, settings.ui.builderPanel.rememberedHeights, setBuilderPanelHeight, setHeight]);
+  }, [bottomView, settings.ui.builderPanel.rememberedHeights, setHeight]);
 
   // Handle tab change
   const handleTabChange = useCallback((tab: BottomView) => {

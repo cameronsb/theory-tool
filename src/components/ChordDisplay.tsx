@@ -92,7 +92,7 @@ export function ChordDisplay({ layout = 'default' }: ChordDisplayProps) {
             <input
               type="checkbox"
               checked={state.keyboardPreviewEnabled}
-              onChange={actions.toggleKeyboardPreview}
+              onChange={actions.toggleChordHighlight}
               className="keyboard-preview-checkbox"
             />
             <span className="keyboard-preview-text">
@@ -184,7 +184,7 @@ export function ChordDisplay({ layout = 'default' }: ChordDisplayProps) {
           <input
             type="checkbox"
             checked={state.keyboardPreviewEnabled}
-            onChange={actions.toggleKeyboardPreview}
+            onChange={actions.toggleChordHighlight}
             className="keyboard-preview-checkbox"
           />
           <span className="keyboard-preview-text">
