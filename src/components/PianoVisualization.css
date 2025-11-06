@@ -1,0 +1,52 @@
+/* Piano visualization */
+.piano-visualization {
+  width: 100%;
+  max-width: 120px;
+  max-height: 64px;
+  flex-shrink: 0;
+  padding: 4px;
+  border-radius: 4px;
+  background: transparent;
+  transition: opacity 0.2s ease, background-color 0.2s ease, filter 0.2s ease;
+  color: white;
+  text-select: none;
+  user-select: none;
+}
+
+.piano-visualization .black-key {
+  stroke: black;
+  fill: black;
+  fill-opacity: .9;
+  stroke-opacity: 0.3;
+}
+
+.piano-visualization .black-key.active {
+  stroke: black;
+  fill: orange;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
+}
+
+.piano-visualization .white-key {
+  stroke: black;
+  fill: white;
+  fill-opacity: .3;
+  stroke-opacity: .4;
+}
+
+.piano-visualization .white-key.active {
+  stroke: black;
+  stroke-width: 0.8;
+  fill: orange;
+  fill-opacity: 1;
+}
+
+.piano-visualization:hover {
+  cursor: pointer;
+  opacity: 1;
+  filter: brightness(1.1);
+}
+
+.piano-visualization.selected {
+  background: rgba(255, 255, 255, 0.05);
+  filter: brightness(1.2);
+}

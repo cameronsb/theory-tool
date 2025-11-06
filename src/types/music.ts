@@ -89,10 +89,20 @@ export interface MelodyNote {
 
 export interface DrumPattern {
     id: string;
-    measure: number; // Which measure this pattern belongs to
-    kick: boolean[]; // 16 steps
-    snare: boolean[]; // 16 steps
-    hihat: boolean[]; // 16 steps
+    name: string; // Pattern name like "Rock Beat 1"
+    category: 'basic' | 'rock' | 'pop' | 'custom'; // Pattern category
+    kick: boolean[]; // 16 steps per measure
+    snare: boolean[]; // 16 steps per measure
+    hihat: boolean[]; // 16 steps per measure
+    measures: 1 | 2; // Pattern length in measures
+}
+
+export interface DrumBlock {
+    id: string;
+    patternId: string; // Reference to a DrumPattern
+    position: number; // Start time in 8th notes from song start
+    duration: number; // Duration in 8th notes (usually patternLength * repeatCount)
+    repeatCount: number; // How many times to repeat the pattern
 }
 
 export interface ChordTrack {
@@ -104,7 +114,8 @@ export interface MelodyTrack {
 }
 
 export interface DrumTrack {
-    patterns: DrumPattern[];
+    patterns: DrumPattern[]; // Available patterns (library + custom)
+    blocks: DrumBlock[]; // Pattern instances on the timeline
 }
 
 export interface Song {

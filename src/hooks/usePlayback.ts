@@ -1,5 +1,5 @@
 import { useRef, useCallback, useEffect } from 'react';
-import type { ChordBlock, DrumPattern } from '../types/music';
+import type { ChordBlock, DrumBlock, DrumPattern } from '../types/music';
 import type { Player } from 'soundfont-player';
 
 interface ScheduledEvent {
@@ -10,10 +10,12 @@ interface ScheduledEvent {
 interface UsePlaybackOptions {
   tempo: number;
   chordBlocks: ChordBlock[];
+  drumBlocks: DrumBlock[];
   drumPatterns: DrumPattern[];
   loop: boolean;
-  audioContext: AudioContext | null;
-  instrument: Player | null;
+  eighthsPerMeasure: number;
+  isPlaying: boolean;
+  playChord: (frequencies: number[]) => void;
   playKick: (time?: number) => void;
   playSnare: (time?: number) => void;
   playHiHat: (time?: number) => void;
@@ -27,10 +29,12 @@ const SCHEDULE_INTERVAL = 25;
 export function usePlayback({
   tempo,
   chordBlocks,
+  drumBlocks,
   drumPatterns,
   loop,
-  audioContext,
-  instrument,
+  eighthsPerMeasure,
+  isPlaying,
+  playChord,
   playKick,
   playSnare,
   playHiHat,
@@ -51,17 +55,17 @@ export function usePlayback({
   const getTotalDurationInEighths = useCallback(() => {
     // Calculate duration from chord blocks
     const chordDuration = chordBlocks.length > 0
-      ? chordBlocks.reduce((sum, block) => sum + block.duration, 0)
+      ? Math.max(...chordBlocks.map(b => b.position + b.duration))
       : 0;
 
-    // Calculate duration from drum patterns (8 eighths per measure in 4/4)
-    const drumDuration = drumPatterns.length > 0
-      ? Math.max(...drumPatterns.map(p => (p.measure + 1) * 8))
+    // Calculate duration from drum blocks
+    const drumDuration = drumBlocks.length > 0
+      ? Math.max(...drumBlocks.map(b => b.position + b.duration))
       : 0;
 
     // Return the longer of the two
     return Math.max(chordDuration, drumDuration);
-  }, [chordBlocks, drumPatterns]);
+  }, [chordBlocks, drumBlocks]);
 
   const scheduleChord = useCallback(
     (block: ChordBlock, when: number) => {
@@ -126,40 +130,56 @@ export function usePlayback({
       }
     }
 
-    // Schedule drum hits (16 steps per measure, each step is 1/2 eighth note)
-    for (const pattern of drumPatterns) {
-      const eighthsPerMeasure = 8; // Assuming 4/4 time
-      const measureStartTime = pattern.measure * eighthsPerMeasure;
+    // Schedule drum blocks
+    for (const block of drumBlocks) {
+      const pattern = drumPatterns.find(p => p.id === block.patternId);
+      if (!pattern) continue;
 
-      for (let step = 0; step < 16; step++) {
-        // Each step is 1/2 eighth note
-        const stepTime = measureStartTime + (step * 0.5);
+      // Calculate how many times the pattern repeats in this block
+      const patternLengthInEighths = pattern.measures * 8; // 8 eighths per measure
 
-        const eventId = `drum-${pattern.measure}-${step}`;
-        const alreadyScheduled = scheduledEventsRef.current.some(
-          (event) => event.blockId === eventId && event.scheduledTime === stepTime
-        );
+      // Schedule each repeat of the pattern
+      for (let repeat = 0; repeat < block.repeatCount; repeat++) {
+        const repeatStartTime = block.position + (repeat * patternLengthInEighths);
 
-        if (alreadyScheduled) continue;
+        // Schedule each step in the pattern (16 steps per measure)
+        const stepsPerMeasure = 16;
+        const totalSteps = pattern.measures * stepsPerMeasure;
 
-        if (stepTime >= currentTimeInEighths && stepTime < scheduleAheadTime) {
-          const timeUntilStep = stepTime - currentTimeInEighths;
-          const whenToPlay = timeUntilStep * getSecondsPerEighth();
+        for (let step = 0; step < totalSteps; step++) {
+          // Each step is 1/2 eighth note
+          const stepTime = repeatStartTime + (step * 0.5);
 
-          if (pattern.kick[step]) scheduleDrumHit('kick', whenToPlay);
-          if (pattern.snare[step]) scheduleDrumHit('snare', whenToPlay);
-          if (pattern.hihat[step]) scheduleDrumHit('hihat', whenToPlay);
+          const eventId = `drum-${block.id}-${repeat}-${step}`;
+          const alreadyScheduled = scheduledEventsRef.current.some(
+            (event) => event.blockId === eventId && event.scheduledTime === stepTime
+          );
 
-          scheduledEventsRef.current.push({
-            blockId: eventId,
-            scheduledTime: stepTime,
-          });
+          if (alreadyScheduled) continue;
+
+          if (stepTime >= currentTimeInEighths && stepTime < scheduleAheadTime) {
+            const timeUntilStep = stepTime - currentTimeInEighths;
+            const whenToPlay = timeUntilStep * getSecondsPerEighth();
+
+            // Use modulo to wrap around if pattern is shorter than total steps
+            const patternStep = step % (pattern.measures * stepsPerMeasure);
+
+            if (pattern.kick[patternStep]) scheduleDrumHit('kick', whenToPlay);
+            if (pattern.snare[patternStep]) scheduleDrumHit('snare', whenToPlay);
+            if (pattern.hihat[patternStep]) scheduleDrumHit('hihat', whenToPlay);
+
+            scheduledEventsRef.current.push({
+              blockId: eventId,
+              scheduledTime: stepTime,
+            });
+          }
         }
       }
     }
   }, [
     audioContext,
     chordBlocks,
+    drumBlocks,
     drumPatterns,
     getSecondsPerEighth,
     scheduleChord,

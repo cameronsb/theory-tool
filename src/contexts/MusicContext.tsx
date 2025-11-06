@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 import { createContext, useReducer, useCallback, useEffect } from "react";
-import type { Note, Mode, SelectedChord, ChordDisplayMode, ChordInProgression, Song, ChordBlock, DrumPattern } from "../types/music";
+import type { Note, Mode, SelectedChord, ChordDisplayMode, ChordInProgression, Song, ChordBlock, DrumPattern, DrumBlock } from "../types/music";
 import { useAudioEngine } from "../hooks/useAudioEngine";
 import { useSettings } from "../hooks/useSettings";
 import type { UserSettings } from "../types/settings";
+import { defaultDrumPatterns } from "../data/drumPatterns";
 
 export type NoteSubdivision = "whole" | "quarter" | "eighth";
 
@@ -23,7 +24,10 @@ function createEmptySong(): Song {
         tracks: {
             chords: { blocks: [] },
             melody: { notes: [] },
-            drums: { patterns: [] },
+            drums: {
+                patterns: [...defaultDrumPatterns], // Include default patterns
+                blocks: []
+            },
         },
         metadata: {
             createdAt: now,
@@ -79,7 +83,12 @@ type MusicAction =
     | { type: "MOVE_CHORD_BLOCK"; payload: { id: string; newPosition: number } }
     | { type: "UPDATE_SONG"; payload: Partial<Song> }
     | { type: "LOAD_SONG"; payload: Song }
-    | { type: "TOGGLE_DRUM_STEP"; payload: { measure: number; drumType: 'kick' | 'snare' | 'hihat'; step: number } };
+    | { type: "ADD_DRUM_BLOCK"; payload: DrumBlock }
+    | { type: "UPDATE_DRUM_BLOCK"; payload: DrumBlock }
+    | { type: "REMOVE_DRUM_BLOCK"; payload: string }
+    | { type: "MOVE_DRUM_BLOCK"; payload: { id: string; newPosition: number } }
+    | { type: "UPDATE_DRUM_PATTERN"; payload: DrumPattern }
+    | { type: "CREATE_CUSTOM_PATTERN"; payload: DrumPattern };
 
 // Initial state
 const initialState: MusicState = {
@@ -349,44 +358,119 @@ function musicReducer(state: MusicState, action: MusicAction): MusicState {
                 playbackState: { ...state.playbackState, subdivision: action.payload },
             };
 
-        case "TOGGLE_DRUM_STEP": {
-            const { measure, drumType, step } = action.payload;
-            const patterns = [...state.song.tracks.drums.patterns];
-
-            // Find or create pattern for this measure
-            let patternIndex = patterns.findIndex(p => p.measure === measure);
-
-            if (patternIndex === -1) {
-                // Create new pattern
-                const newPattern: DrumPattern = {
-                    id: `drum-pattern-${Date.now()}-${Math.random()}`,
-                    measure,
-                    kick: Array(16).fill(false),
-                    snare: Array(16).fill(false),
-                    hihat: Array(16).fill(false),
-                };
-                patterns.push(newPattern);
-                patternIndex = patterns.length - 1;
-            }
-
-            // Toggle the step
-            const updatedPattern = { ...patterns[patternIndex] };
-            updatedPattern[drumType] = [...updatedPattern[drumType]];
-            updatedPattern[drumType][step] = !updatedPattern[drumType][step];
-            patterns[patternIndex] = updatedPattern;
-
+        case "ADD_DRUM_BLOCK":
             return {
                 ...state,
                 song: {
                     ...state.song,
                     tracks: {
                         ...state.song.tracks,
-                        drums: { patterns },
+                        drums: {
+                            ...state.song.tracks.drums,
+                            blocks: [...state.song.tracks.drums.blocks, action.payload],
+                        },
+                    },
+                    metadata: { ...state.song.metadata, updatedAt: now },
+                },
+            };
+
+        case "UPDATE_DRUM_BLOCK": {
+            const blocks = state.song.tracks.drums.blocks.map((block) =>
+                block.id === action.payload.id ? action.payload : block
+            );
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    tracks: {
+                        ...state.song.tracks,
+                        drums: {
+                            ...state.song.tracks.drums,
+                            blocks,
+                        },
                     },
                     metadata: { ...state.song.metadata, updatedAt: now },
                 },
             };
         }
+
+        case "REMOVE_DRUM_BLOCK": {
+            const blocks = state.song.tracks.drums.blocks.filter(
+                (block) => block.id !== action.payload
+            );
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    tracks: {
+                        ...state.song.tracks,
+                        drums: {
+                            ...state.song.tracks.drums,
+                            blocks,
+                        },
+                    },
+                    metadata: { ...state.song.metadata, updatedAt: now },
+                },
+            };
+        }
+
+        case "MOVE_DRUM_BLOCK": {
+            const blocks = state.song.tracks.drums.blocks.map((block) =>
+                block.id === action.payload.id
+                    ? { ...block, position: action.payload.newPosition }
+                    : block
+            );
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    tracks: {
+                        ...state.song.tracks,
+                        drums: {
+                            ...state.song.tracks.drums,
+                            blocks,
+                        },
+                    },
+                    metadata: { ...state.song.metadata, updatedAt: now },
+                },
+            };
+        }
+
+        case "UPDATE_DRUM_PATTERN": {
+            const patterns = state.song.tracks.drums.patterns.map((pattern) =>
+                pattern.id === action.payload.id ? action.payload : pattern
+            );
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    tracks: {
+                        ...state.song.tracks,
+                        drums: {
+                            ...state.song.tracks.drums,
+                            patterns,
+                        },
+                    },
+                    metadata: { ...state.song.metadata, updatedAt: now },
+                },
+            };
+        }
+
+        case "CREATE_CUSTOM_PATTERN":
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    tracks: {
+                        ...state.song.tracks,
+                        drums: {
+                            ...state.song.tracks.drums,
+                            patterns: [...state.song.tracks.drums.patterns, action.payload],
+                        },
+                    },
+                    metadata: { ...state.song.metadata, updatedAt: now },
+                },
+            };
 
         default:
             return state;
@@ -433,7 +517,12 @@ interface MusicContextType {
         moveChordBlock: (id: string, newPosition: number) => void;
         updateSong: (updates: Partial<Song>) => void;
         loadSong: (song: Song) => void;
-        toggleDrumStep: (measure: number, drumType: 'kick' | 'snare' | 'hihat', step: number) => void;
+        addDrumBlock: (block: DrumBlock) => void;
+        updateDrumBlock: (block: DrumBlock) => void;
+        removeDrumBlock: (id: string) => void;
+        moveDrumBlock: (id: string, newPosition: number) => void;
+        updateDrumPattern: (pattern: DrumPattern) => void;
+        createCustomPattern: (pattern: DrumPattern) => void;
         setMasterVolume: (volume: number) => void;
         setTrackVolume: (track: keyof UserSettings['volume']['tracks'], volume: number) => void;
         setDrumSoundVolume: (sound: keyof UserSettings['volume']['drumSounds'], volume: number) => void;
@@ -636,8 +725,28 @@ export function MusicProvider({ children }: MusicProviderProps) {
         dispatch({ type: "LOAD_SONG", payload: song });
     }, []);
 
-    const toggleDrumStep = useCallback((measure: number, drumType: 'kick' | 'snare' | 'hihat', step: number) => {
-        dispatch({ type: "TOGGLE_DRUM_STEP", payload: { measure, drumType, step } });
+    const addDrumBlock = useCallback((block: DrumBlock) => {
+        dispatch({ type: "ADD_DRUM_BLOCK", payload: block });
+    }, []);
+
+    const updateDrumBlock = useCallback((block: DrumBlock) => {
+        dispatch({ type: "UPDATE_DRUM_BLOCK", payload: block });
+    }, []);
+
+    const removeDrumBlock = useCallback((id: string) => {
+        dispatch({ type: "REMOVE_DRUM_BLOCK", payload: id });
+    }, []);
+
+    const moveDrumBlock = useCallback((id: string, newPosition: number) => {
+        dispatch({ type: "MOVE_DRUM_BLOCK", payload: { id, newPosition } });
+    }, []);
+
+    const updateDrumPattern = useCallback((pattern: DrumPattern) => {
+        dispatch({ type: "UPDATE_DRUM_PATTERN", payload: pattern });
+    }, []);
+
+    const createCustomPattern = useCallback((pattern: DrumPattern) => {
+        dispatch({ type: "CREATE_CUSTOM_PATTERN", payload: pattern });
     }, []);
 
     const value: MusicContextType = {
@@ -678,7 +787,12 @@ export function MusicProvider({ children }: MusicProviderProps) {
             moveChordBlock,
             updateSong,
             loadSong,
-            toggleDrumStep,
+            addDrumBlock,
+            updateDrumBlock,
+            removeDrumBlock,
+            moveDrumBlock,
+            updateDrumPattern,
+            createCustomPattern,
             setMasterVolume,
             setTrackVolume,
             setDrumSoundVolume,

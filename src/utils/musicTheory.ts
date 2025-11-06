@@ -689,3 +689,101 @@ export const PIANO_RANGES = {
     fourOctaves: { start: 48, end: 95, label: "4 Octaves (C3-B6)" },
     fiveOctaves: { start: 36, end: 95, label: "5 Octaves (C2-B6)" },
 } as const;
+
+/**
+ * Get the display name for a chord with applied modifiers
+ * Handles extensions (7, 9, 11, 13), alterations (sus, aug, dim), and special voicings (add9)
+ *
+ * @param rootNote - The root note of the chord (e.g., 'C', 'F#')
+ * @param baseType - The base chord type ('maj', 'min', 'dim', 'aug')
+ * @param baseIntervals - The base chord intervals before modifiers
+ * @param activeModifiers - Set of modifier labels that are active (e.g., '7', 'add9', 'sus4')
+ * @returns The formatted chord name (e.g., 'Cadd9', 'Fmaj7', 'Gsus4')
+ */
+export function getChordDisplayName(
+    rootNote: Note,
+    baseType: ChordType,
+    baseIntervals: number[],
+    activeModifiers: Set<string>
+): string {
+    // No modifiers - use simple chord name
+    if (activeModifiers.size === 0) {
+        return getFullChordName(rootNote, baseIntervals);
+    }
+
+    let name = rootNote;
+    const modArray = Array.from(activeModifiers);
+
+    // Handle diminished - replaces entire triad
+    if (modArray.includes('dim')) {
+        return rootNote + '°';
+    }
+
+    // Handle augmented - replaces entire triad
+    if (modArray.includes('aug')) {
+        return rootNote + '+';
+    }
+
+    // Handle sus chords - they replace the quality and take priority
+    if (modArray.includes('sus2') || modArray.includes('sus4')) {
+        const sus = modArray.find(m => m.startsWith('sus'));
+        name = rootNote + sus;
+
+        // Can still add extensions to sus chords
+        const extensions = modArray.filter(m => !m.startsWith('sus') && !m.includes('7'));
+        if (extensions.length > 0) {
+            name += extensions.join('');
+        }
+
+        return name;
+    }
+
+    // Add base quality (minor/diminished from base type)
+    if (baseType === 'min') {
+        name += 'm';
+    } else if (baseType === 'dim') {
+        name += '°';
+    }
+
+    // Determine the highest/dominant extension
+    // Priority: 13 > 11 > maj9/9 > maj7/7/6
+    const hasThirteenth = modArray.includes('13');
+    const hasEleventh = modArray.includes('11');
+    const hasNinth = modArray.includes('9');
+    const hasMaj9 = modArray.includes('maj9');
+    const hasMaj7 = modArray.includes('maj7');
+    const hasSeventh = modArray.includes('7');
+    const hasSix = modArray.includes('6');
+    const hasAdd9 = modArray.includes('add9');
+
+    // If we have 13, it implies 9 and 11, so just show 13
+    if (hasThirteenth) {
+        name += '13';
+    }
+    // If we have 11, it implies 9, so just show 11
+    else if (hasEleventh) {
+        name += '11';
+    }
+    // Major 9th (maj7 + 9th)
+    else if (hasMaj9) {
+        name += 'maj9';
+    }
+    // Dominant 9th (b7 + 9th)
+    else if (hasNinth) {
+        name += '9';
+    }
+    // Just 7th chords
+    else if (hasMaj7) {
+        name += 'maj7';
+    } else if (hasSeventh) {
+        name += '7';
+    } else if (hasSix) {
+        name += '6';
+    }
+    // add9 is different - it doesn't imply a 7th
+    else if (hasAdd9) {
+        name += 'add9';
+    }
+
+    return name;
+}

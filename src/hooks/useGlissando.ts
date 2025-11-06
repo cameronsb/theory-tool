@@ -23,7 +23,7 @@
  * ```
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, type TouchEvent, type MouseEvent} from 'react';
 
 /**
  * Glissando options
@@ -76,14 +76,14 @@ export interface UseGlissandoReturn {
    * Event handlers to spread onto container element
    */
   handlers: {
-    onMouseDown: (e: React.MouseEvent) => void;
-    onMouseMove: (e: React.MouseEvent) => void;
-    onMouseUp: (e: React.MouseEvent) => void;
-    onMouseLeave: (e: React.MouseEvent) => void;
-    onTouchStart: (e: React.TouchEvent) => void;
-    onTouchMove: (e: React.TouchEvent) => void;
-    onTouchEnd: (e: React.TouchEvent) => void;
-    onTouchCancel: (e: React.TouchEvent) => void;
+    onMouseDown: (e: MouseEvent) => void;
+    onMouseMove: (e: MouseEvent) => void;
+    onMouseUp: (e: MouseEvent) => void;
+    onMouseLeave: (e: MouseEvent) => void;
+    onTouchStart: (e: TouchEvent) => void;
+    onTouchMove: (e: TouchEvent) => void;
+    onTouchEnd: (e: TouchEvent) => void;
+    onTouchCancel: (e: TouchEvent) => void;
   };
 
   /**
@@ -170,7 +170,7 @@ export function useGlissando<T = string>(
 
   // ===== Mouse Handlers =====
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleMouseDown = useCallback((e: MouseEvent) => {
     if (preventDefault) e.preventDefault();
 
     setIsMouseDown(true);
@@ -180,20 +180,20 @@ export function useGlissando<T = string>(
     findAndTriggerAt(e.clientX, e.clientY);
   }, [preventDefault, findAndTriggerAt]);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isMouseDown) return;
     if (preventDefault) e.preventDefault();
 
     findAndTriggerAt(e.clientX, e.clientY);
   }, [isMouseDown, preventDefault, findAndTriggerAt]);
 
-  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+  const handleMouseUp = useCallback((e: MouseEvent) => {
     if (preventDefault) e.preventDefault();
     setIsMouseDown(false);
     lastTriggeredRef.current = null;
   }, [preventDefault]);
 
-  const handleMouseLeave = useCallback((e: React.MouseEvent) => {
+  const handleMouseLeave = useCallback((e: MouseEvent) => {
     if (preventDefault) e.preventDefault();
     setIsMouseDown(false);
     lastTriggeredRef.current = null;
@@ -201,7 +201,7 @@ export function useGlissando<T = string>(
 
   // ===== Touch Handlers =====
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+const handleTouchStart = useCallback((e: TouchEvent) => {
     if (preventDefault) e.preventDefault();
 
     if (e.touches.length > 0 && touchId === null) {
@@ -214,7 +214,7 @@ export function useGlissando<T = string>(
     }
   }, [preventDefault, touchId, findAndTriggerAt]);
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+  const handleTouchMove = useCallback((e: TouchEvent) => {
     if (touchId === null) return;
     if (preventDefault) e.preventDefault();
 
@@ -225,7 +225,7 @@ export function useGlissando<T = string>(
     findAndTriggerAt(touch.clientX, touch.clientY);
   }, [touchId, preventDefault, findAndTriggerAt]);
 
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
     if (preventDefault) e.preventDefault();
 
     const changedTouches = Array.from(e.changedTouches);
@@ -235,7 +235,7 @@ export function useGlissando<T = string>(
     }
   }, [touchId, preventDefault]);
 
-  const handleTouchCancel = useCallback((e: React.TouchEvent) => {
+  const handleTouchCancel = useCallback((e: TouchEvent) => {
     if (preventDefault) e.preventDefault();
 
     if (touchId !== null) {

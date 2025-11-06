@@ -17,7 +17,7 @@
  * ```
  */
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, type MouseEvent, type TouchEvent } from 'react';
 
 /**
  * Pointer position
@@ -34,22 +34,22 @@ export interface UsePointerEventsOptions {
   /**
    * Called when pointer goes down (mouse down or touch start)
    */
-  onPointerDown?: (position: PointerPosition, event: React.MouseEvent | React.TouchEvent) => void;
+  onPointerDown?: (position: PointerPosition, event: MouseEvent | TouchEvent) => void;
 
   /**
    * Called when pointer moves (mouse move or touch move)
    */
-  onPointerMove?: (position: PointerPosition, event: React.MouseEvent | React.TouchEvent) => void;
+  onPointerMove?: (position: PointerPosition, event: MouseEvent | TouchEvent) => void;
 
   /**
    * Called when pointer goes up (mouse up or touch end)
    */
-  onPointerUp?: (event: React.MouseEvent | React.TouchEvent) => void;
+  onPointerUp?: (event: MouseEvent | TouchEvent) => void;
 
   /**
    * Called when pointer leaves the element
    */
-  onPointerLeave?: (event: React.MouseEvent) => void;
+  onPointerLeave?: (event: MouseEvent) => void;
 
   /**
    * Whether to prevent default browser behavior
@@ -66,14 +66,14 @@ export interface UsePointerEventsOptions {
  * Pointer event handlers return value
  */
 export interface UsePointerEventsReturn {
-  onMouseDown: (e: React.MouseEvent) => void;
-  onMouseMove: (e: React.MouseEvent) => void;
-  onMouseUp: (e: React.MouseEvent) => void;
-  onMouseLeave: (e: React.MouseEvent) => void;
-  onTouchStart: (e: React.TouchEvent) => void;
-  onTouchMove: (e: React.TouchEvent) => void;
-  onTouchEnd: (e: React.TouchEvent) => void;
-  onTouchCancel: (e: React.TouchEvent) => void;
+  onMouseDown: (e: MouseEvent) => void;
+  onMouseMove: (e: MouseEvent) => void;
+  onMouseUp: (e: MouseEvent) => void;
+  onMouseLeave: (e: MouseEvent) => void;
+  onTouchStart: (e: TouchEvent) => void;
+  onTouchMove: (e: TouchEvent) => void;
+  onTouchEnd: (e: TouchEvent) => void;
+  onTouchCancel: (e: TouchEvent) => void;
 }
 
 /**
@@ -99,28 +99,28 @@ export function usePointerEvents(
 
   // ===== Mouse Handlers =====
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleMouseDown = useCallback((e: MouseEvent) => {
     if (shouldPreventDefault) e.preventDefault();
     if (shouldStopPropagation) e.stopPropagation();
 
     onPointerDown?.({ x: e.clientX, y: e.clientY }, e);
   }, [onPointerDown, shouldPreventDefault, shouldStopPropagation]);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (shouldPreventDefault) e.preventDefault();
     if (shouldStopPropagation) e.stopPropagation();
 
     onPointerMove?.({ x: e.clientX, y: e.clientY }, e);
   }, [onPointerMove, shouldPreventDefault, shouldStopPropagation]);
 
-  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+  const handleMouseUp = useCallback((e: MouseEvent) => {
     if (shouldPreventDefault) e.preventDefault();
     if (shouldStopPropagation) e.stopPropagation();
 
     onPointerUp?.(e);
   }, [onPointerUp, shouldPreventDefault, shouldStopPropagation]);
 
-  const handleMouseLeave = useCallback((e: React.MouseEvent) => {
+  const handleMouseLeave = useCallback((e: MouseEvent) => {
     if (shouldPreventDefault) e.preventDefault();
     if (shouldStopPropagation) e.stopPropagation();
 
@@ -129,7 +129,7 @@ export function usePointerEvents(
 
   // ===== Touch Handlers =====
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+  const handleTouchStart = useCallback((e: TouchEvent) => {
     if (shouldPreventDefault) e.preventDefault();
     if (shouldStopPropagation) e.stopPropagation();
 
@@ -140,7 +140,7 @@ export function usePointerEvents(
     }
   }, [onPointerDown, shouldPreventDefault, shouldStopPropagation]);
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+  const handleTouchMove = useCallback((e: TouchEvent) => {
     if (activeTouchIdRef.current === null) return;
     if (shouldPreventDefault) e.preventDefault();
     if (shouldStopPropagation) e.stopPropagation();
@@ -151,7 +151,7 @@ export function usePointerEvents(
     }
   }, [onPointerMove, shouldPreventDefault, shouldStopPropagation]);
 
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
     if (shouldPreventDefault) e.preventDefault();
     if (shouldStopPropagation) e.stopPropagation();
 
@@ -163,7 +163,7 @@ export function usePointerEvents(
     }
   }, [onPointerUp, shouldPreventDefault, shouldStopPropagation]);
 
-  const handleTouchCancel = useCallback((e: React.TouchEvent) => {
+  const handleTouchCancel = useCallback((e: TouchEvent) => {
     if (shouldPreventDefault) e.preventDefault();
     if (shouldStopPropagation) e.stopPropagation();
 
