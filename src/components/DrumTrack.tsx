@@ -1,45 +1,64 @@
+import { useState } from 'react';
 import { useMusic } from '../hooks/useMusic';
-import { DrumSequencer } from './DrumSequencer';
+import { PatternBrowser } from './PatternBrowser';
 import { VolumeSlider } from './VolumeSlider';
+import type { DrumPattern } from '../types/music';
 import './DrumTrack.css';
 
 export function DrumTrack() {
-  const { state, settings, actions } = useMusic();
+  const { state, settings, actions, audio } = useMusic();
+  const [selectedPattern, setSelectedPattern] = useState<DrumPattern | null>(null);
+  const patterns = state.song.tracks.drums.patterns;
 
-  // Calculate how many measures we need based on the chord blocks
-  const chordBlocks = state.song.tracks.chords.blocks;
-  const timeSignature = state.song.timeSignature;
+  const handlePatternSelect = (pattern: DrumPattern) => {
+    setSelectedPattern(pattern);
 
-  // Find the last block's end position
-  const lastBlockEnd = chordBlocks.length > 0
-    ? Math.max(...chordBlocks.map(b => b.position + b.duration))
-    : 0;
+    // Preview the pattern by playing the first few hits
+    const previewSteps = Math.min(8, pattern.kick.length);
+    let stepIndex = 0;
 
-  // Convert 8th notes to measures (assuming 4/4 = 8 eighths per measure)
-  const eighthsPerMeasure = (timeSignature.numerator * 8) / timeSignature.denominator;
-  const measuresNeeded = Math.max(4, Math.ceil(lastBlockEnd / eighthsPerMeasure));
+    const playPreview = () => {
+      if (stepIndex >= previewSteps) return;
+
+      const currentTime = audio.audioContext?.currentTime || 0;
+      const stepTime = currentTime + (stepIndex * 0.1);
+
+      if (pattern.kick[stepIndex]) audio.playKick(stepTime);
+      if (pattern.snare[stepIndex]) audio.playSnare(stepTime);
+      if (pattern.hihat[stepIndex]) audio.playHiHat(stepTime);
+
+      stepIndex++;
+      if (stepIndex < previewSteps) {
+        setTimeout(playPreview, 100);
+      }
+    };
+
+    playPreview();
+  };
 
   return (
     <div className="drum-track">
       <div className="drum-track-header">
-        <div className="drum-track-header-left">
-          <h3>Drum Track</h3>
+        <h3>Drum Patterns</h3>
+        <div className="drum-track-header-right">
           <div className="drum-track-info">
-            {measuresNeeded} {measuresNeeded === 1 ? 'measure' : 'measures'}
+            {patterns.length} {patterns.length === 1 ? 'pattern' : 'patterns'}
           </div>
+          <VolumeSlider
+            value={settings.volume.tracks.drums}
+            onChange={(v) => actions.setTrackVolume('drums', v)}
+            color="#4facfe"
+            label="Vol"
+            orientation="horizontal"
+          />
         </div>
-        <VolumeSlider
-          value={settings.volume.tracks.drums}
-          onChange={(v) => actions.setTrackVolume('drums', v)}
-          color="#4facfe"
-          label="Drums"
-          orientation="vertical"
-        />
       </div>
       <div className="drum-track-content">
-        {Array.from({ length: measuresNeeded }).map((_, i) => (
-          <DrumSequencer key={i} measure={i} />
-        ))}
+        <PatternBrowser
+          patterns={patterns}
+          onPatternSelect={handlePatternSelect}
+          selectedPatternId={selectedPattern?.id}
+        />
       </div>
     </div>
   );

@@ -19,6 +19,8 @@ interface UsePlaybackOptions {
   playKick: (time?: number) => void;
   playSnare: (time?: number) => void;
   playHiHat: (time?: number) => void;
+  audioContext: AudioContext | null;
+  instrument: Player | null;
   onTimeUpdate?: (timeInEighths: number) => void;
   onPlaybackEnd?: () => void;
 }
@@ -38,6 +40,8 @@ export function usePlayback({
   playKick,
   playSnare,
   playHiHat,
+  audioContext,
+  instrument,
   onTimeUpdate,
   onPlaybackEnd,
 }: UsePlaybackOptions) {

@@ -4,6 +4,7 @@ import { useSettings } from '../hooks/useSettings';
 import { useResizable } from '../hooks/useResizable';
 import { ChordPalette } from './ChordPalette';
 import { ChordTimeline } from './ChordTimeline';
+import { DrumTimeline } from './DrumTimeline';
 import { DrumTrack } from './DrumTrack';
 import { Piano } from './Piano';
 import { SIZES } from '../config';
@@ -68,6 +69,7 @@ export function BuildMode() {
         </div>
         <div className="timeline-container">
           <ChordTimeline />
+          <DrumTimeline />
         </div>
       </div>
 
