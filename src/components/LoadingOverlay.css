@@ -18,7 +18,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 32px;
+  max-width: 500px;
+  padding: 0 24px;
 }
 
 .loading-piano {
@@ -69,10 +71,90 @@
   }
 }
 
+.loading-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
 .loading-text {
   color: var(--text-secondary, rgba(255, 255, 255, 0.6));
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.loading-progress-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.loading-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.loading-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent, #f97316), var(--chord-highlight, #fb923c));
+  border-radius: 999px;
+  transition: width 0.3s ease-out;
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.5);
+}
+
+.loading-percentage {
+  min-width: 40px;
+  text-align: right;
+  color: var(--text-primary, rgba(255, 255, 255, 0.9));
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.loading-tip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  width: 100%;
+  min-height: 80px;
+}
+
+.loading-tip-label {
+  color: var(--accent, #f97316);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.loading-tip-text {
+  color: var(--text-primary, rgba(255, 255, 255, 0.85));
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  animation: fadeInTip 0.5s ease;
+}
+
+@keyframes fadeInTip {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
