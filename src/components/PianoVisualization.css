@@ -45,7 +45,6 @@
 }
 
 .piano-visualization:hover {
-  cursor: pointer;
   opacity: 1;
   filter: brightness(1.1);
 }
