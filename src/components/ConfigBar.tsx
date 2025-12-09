@@ -35,9 +35,31 @@ export function ConfigBar() {
       <header className="header-bar">
         <div className="header-brand">
           <span className="header-title">Theory Tool</span>
-          <span className="header-key-badge">
-            {state.song.key} {state.song.mode}
-          </span>
+          <select
+            className="header-key-badge-select"
+            value={`${state.song.key}-${state.song.mode}`}
+            onChange={(e) => {
+              const [key, mode] = e.target.value.split('-') as [typeof NOTES[number], 'major' | 'minor'];
+              actions.selectKey(key);
+              actions.setMode(mode);
+            }}
+            aria-label="Select key and scale"
+          >
+            <optgroup label="Major Keys">
+              {NOTES.map((note) => (
+                <option key={`${note}-major`} value={`${note}-major`}>
+                  {note} Major
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Minor Keys">
+              {NOTES.map((note) => (
+                <option key={`${note}-minor`} value={`${note}-minor`}>
+                  {note} Minor
+                </option>
+              ))}
+            </optgroup>
+          </select>
         </div>
 
         <button

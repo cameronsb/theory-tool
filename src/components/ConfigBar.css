@@ -33,10 +33,12 @@
   letter-spacing: -0.02em;
 }
 
-.header-key-badge {
+/* Key/Scale Badge Select — styled to look like a badge */
+.header-key-badge-select {
+  appearance: none;
   display: inline-flex;
   align-items: center;
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-1) var(--space-4) var(--space-1) var(--space-3);
   background: var(--accent-bg);
   border: 1px solid var(--accent-border);
   border-radius: var(--radius-md);
@@ -44,7 +46,38 @@
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--accent);
-  text-transform: capitalize;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  /* Dropdown arrow */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23f0a050' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  min-height: 32px;
+}
+
+.header-key-badge-select:hover {
+  background-color: var(--accent-bg-hover);
+  border-color: var(--accent);
+}
+
+.header-key-badge-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-bg);
+  border-color: var(--accent);
+}
+
+.header-key-badge-select option {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  padding: var(--space-2);
+}
+
+.header-key-badge-select optgroup {
+  background: var(--bg-surface);
+  color: var(--text-tertiary);
+  font-weight: 600;
+  font-size: var(--text-xs);
 }
 
 /* ========================================
@@ -289,9 +322,10 @@
     font-size: var(--text-md);
   }
 
-  .header-key-badge {
+  .header-key-badge-select {
     font-size: var(--text-xs);
-    padding: var(--space-1) var(--space-2);
+    padding: var(--space-1) var(--space-3) var(--space-1) var(--space-2);
+    min-height: 28px;
   }
 
   .settings-drawer {
