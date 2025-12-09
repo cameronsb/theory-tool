@@ -5,16 +5,32 @@ interface MidiInputOptions {
   onNoteOff?: (midiNote: number) => void;
 }
 
+interface MIDIMessageEvent extends Event {
+  data: Uint8Array;
+}
+
+interface MIDIPort {
+  name: string | null;
+  state: string;
+  type: string;
+  addEventListener(type: string, listener: (event: MIDIMessageEvent) => void): void;
+  removeEventListener(type: string, listener: (event: MIDIMessageEvent) => void): void;
+}
+
+interface MIDIAccess {
+  inputs: Map<string, MIDIPort>;
+  addEventListener(type: string, listener: (event: { port: MIDIPort }) => void): void;
+  removeEventListener(type: string, listener: (event: { port: MIDIPort }) => void): void;
+}
+
 export function useMidiInput({ onNoteOn, onNoteOff }: MidiInputOptions) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [midiAccess, setMidiAccess] = useState<any>(null);
+  const [midiAccess, setMidiAccess] = useState<MIDIAccess | null>(null);
   const [isSupported, setIsSupported] = useState(false);
   const [devices, setDevices] = useState<string[]>([]);
   const activeNotesRef = useRef<Set<number>>(new Set());
 
   useEffect(() => {
     if (!navigator.requestMIDIAccess) {
-      console.warn('Web MIDI API not supported in this browser');
       setIsSupported(false);
       return;
     }
@@ -23,44 +39,35 @@ export function useMidiInput({ onNoteOn, onNoteOff }: MidiInputOptions) {
 
     navigator.requestMIDIAccess()
       .then((access) => {
-        console.log('MIDI Access granted:', access);
-        setMidiAccess(access);
+        setMidiAccess(access as unknown as MIDIAccess);
 
         const deviceNames: string[] = [];
         access.inputs.forEach((input) => {
-          console.log(`MIDI device connected: ${input.name}`);
           deviceNames.push(input.name || 'Unknown Device');
         });
         setDevices(deviceNames);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const handleMIDIMessage = (event: any) => {
+        const handleMIDIMessage = (event: MIDIMessageEvent) => {
           const [command, note, velocity] = event.data;
-          const channel = command & 0x0f;
           const messageType = command & 0xf0;
 
           // Note On (0x90)
           if (messageType === 0x90 && velocity > 0) {
-            console.log(`MIDI Note On: ${note}, velocity: ${velocity}, channel: ${channel}`);
             activeNotesRef.current.add(note);
             onNoteOn?.(note, velocity);
           }
           // Note Off (0x80) or Note On with velocity 0
           else if (messageType === 0x80 || (messageType === 0x90 && velocity === 0)) {
-            console.log(`MIDI Note Off: ${note}, channel: ${channel}`);
             activeNotesRef.current.delete(note);
             onNoteOff?.(note);
           }
         };
 
         access.inputs.forEach((input) => {
-          input.addEventListener('midimessage', handleMIDIMessage as any);
+          input.addEventListener('midimessage', handleMIDIMessage as EventListener);
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const handleStateChange = (event: any) => {
-          console.log('MIDI device state changed:', event.port.state, event.port.name);
-
+        const handleStateChange = (event: { port: MIDIPort }) => {
           const updatedDevices: string[] = [];
           access.inputs.forEach((input) => {
             updatedDevices.push(input.name || 'Unknown Device');
@@ -72,17 +79,16 @@ export function useMidiInput({ onNoteOn, onNoteOff }: MidiInputOptions) {
           }
         };
 
-        access.addEventListener('statechange', handleStateChange as any);
+        access.addEventListener('statechange', handleStateChange as EventListener);
 
         return () => {
           access.inputs.forEach((input) => {
-            input.removeEventListener('midimessage', handleMIDIMessage as any);
+            input.removeEventListener('midimessage', handleMIDIMessage as EventListener);
           });
-          access.removeEventListener('statechange', handleStateChange as any);
+          access.removeEventListener('statechange', handleStateChange as EventListener);
         };
       })
-      .catch((error) => {
-        console.error('Failed to get MIDI access:', error);
+      .catch(() => {
         setIsSupported(false);
       });
   }, [onNoteOn, onNoteOff]);

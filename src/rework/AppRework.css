@@ -1,9 +1,15 @@
+/* ========================================
+ * App Container
+ * ======================================== */
+
 .app {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
-  color: #333;
+  background: var(--bg);
+  color: var(--text-primary);
 }
 
 .main-content {

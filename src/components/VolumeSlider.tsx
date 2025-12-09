@@ -40,7 +40,7 @@ export function VolumeSlider({
             '--slider-color': color,
             '--slider-progress': `${percentage}%`
           } as CSSProperties}
-          aria-label={`${label} volume: ${percentage}%`}
+          aria-label={label ? `${label} volume: ${percentage}%` : `Volume: ${percentage}%`}
         />
         <span className="volume-slider-value">{percentage}%</span>
       </div>
