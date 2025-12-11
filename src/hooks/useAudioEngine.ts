@@ -10,37 +10,68 @@ interface AudioEngine {
     loading: boolean;
 }
 
-// Global reference to AudioContext for iOS unlock
-let globalAudioContext: AudioContext | null = null;
-let unlockListenersAdded = false;
+// Silent audio track (base64-encoded tiny MP3) to bypass iOS mute switch
+// This forces Web Audio onto the media channel instead of the ringer channel
+const SILENT_AUDIO_DATA_URI =
+    "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYoRBrWAAAAAAAAAAAAAAAAAAAA//tQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//tQZB4P8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
 
-// iOS audio unlock handler - must be called synchronously within user gesture
-function unlockAudioContext() {
-    if (globalAudioContext && globalAudioContext.state === 'suspended') {
-        globalAudioContext.resume();
+let silentAudioElement: HTMLAudioElement | null = null;
+let iOSAudioUnlocked = false;
+
+// Detect iOS devices (including iPads reporting as macOS)
+function isIOS(): boolean {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isIOSUserAgent = /iphone|ipad|ipod/.test(userAgent);
+    const isMacWithTouch = /macintosh/.test(userAgent) && navigator.maxTouchPoints > 0;
+    return isIOSUserAgent || isMacWithTouch;
+}
+
+// Unlock iOS audio by playing silent track - forces Web Audio onto media channel
+function unlockIOSAudio() {
+    if (iOSAudioUnlocked || !isIOS()) return;
+
+    try {
+        if (!silentAudioElement) {
+            silentAudioElement = new Audio(SILENT_AUDIO_DATA_URI);
+            silentAudioElement.loop = true;
+            silentAudioElement.volume = 0.01; // Nearly silent but not zero
+        }
+
+        const playPromise = silentAudioElement.play();
+        if (playPromise) {
+            playPromise
+                .then(() => {
+                    iOSAudioUnlocked = true;
+                })
+                .catch(() => {
+                    // Playback failed, will retry on next interaction
+                });
+        }
+    } catch {
+        // Ignore errors, will retry on next interaction
     }
 }
 
-// Set up global unlock listeners once (called early, before context may exist)
-function setupUnlockListeners() {
-    if (unlockListenersAdded) return;
-    unlockListenersAdded = true;
+// Set up iOS audio unlock on user interaction
+let unlockListenerAdded = false;
 
-    const events = ['touchstart', 'touchend', 'click', 'keydown'];
+function setupIOSAudioUnlock() {
+    if (unlockListenerAdded || !isIOS()) return;
+    unlockListenerAdded = true;
 
-    const handleUnlock = () => {
-        unlockAudioContext();
-        // Only remove listeners once audio is actually running
-        if (globalAudioContext && globalAudioContext.state === 'running') {
-            events.forEach(event => {
-                document.removeEventListener(event, handleUnlock, true);
+    const events = ["touchend", "click"];
+
+    const handleInteraction = () => {
+        unlockIOSAudio();
+        if (iOSAudioUnlocked) {
+            events.forEach((event) => {
+                document.removeEventListener(event, handleInteraction, true);
             });
         }
     };
 
-    // Use capture phase to ensure we intercept before any other handler
-    events.forEach(event => {
-        document.addEventListener(event, handleUnlock, true);
+    events.forEach((event) => {
+        document.addEventListener(event, handleInteraction, true);
     });
 }
 
@@ -55,8 +86,8 @@ export function useAudioEngine() {
     });
 
     useEffect(() => {
-        // Set up unlock listeners immediately on mount
-        setupUnlockListeners();
+        // Set up iOS mute switch bypass
+        setupIOSAudioUnlock();
 
         const initAudio = async () => {
             if (audioRef.current.initialized || audioRef.current.loading)
@@ -67,11 +98,13 @@ export function useAudioEngine() {
 
             try {
                 const AudioContextClass =
-                    window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+                    window.AudioContext ||
+                    (
+                        window as unknown as {
+                            webkitAudioContext?: typeof AudioContext;
+                        }
+                    ).webkitAudioContext;
                 const context = new AudioContextClass();
-
-                // Store reference for global unlock handler
-                globalAudioContext = context;
 
                 const masterGain = context.createGain();
                 masterGain.gain.value = 1.5;
@@ -105,38 +138,53 @@ export function useAudioEngine() {
         initAudio();
     }, []);
 
-    const playNote = useCallback(async (frequency: number, duration = 0.3, volume = 1.5) => {
-        const { instrument, initialized, context } = audioRef.current;
-        if (!instrument || !initialized || !context) {
-            return;
-        }
+    const playNote = useCallback(
+        async (frequency: number, duration = 0.3, volume = 1.5) => {
+            const { instrument, initialized, context } = audioRef.current;
+            if (!instrument || !initialized || !context) {
+                return;
+            }
 
-        // Resume audio context if suspended
-        if (context.state === 'suspended') {
-            await context.resume();
-        }
+            // Resume audio context if suspended
+            if (context.state === "suspended") {
+                await context.resume();
+            }
 
-        const midiNote = frequencyToMidi(frequency);
-        instrument.play(midiNote, context.currentTime, { duration, gain: volume });
-    }, []);
+            // Ensure iOS audio is unlocked
+            unlockIOSAudio();
 
-    const playChord = useCallback(async (frequencies: number[], duration = 0.8, volume = 1.3) => {
-        const { instrument, initialized, context } = audioRef.current;
-        if (!instrument || !initialized || !context) {
-            return;
-        }
+            const midiNote = frequencyToMidi(frequency);
+            instrument.play(midiNote, context.currentTime, {
+                duration,
+                gain: volume,
+            });
+        },
+        []
+    );
 
-        // Resume audio context if suspended
-        if (context.state === 'suspended') {
-            await context.resume();
-        }
+    const playChord = useCallback(
+        async (frequencies: number[], duration = 0.8, volume = 1.3) => {
+            const { instrument, initialized, context } = audioRef.current;
+            if (!instrument || !initialized || !context) {
+                return;
+            }
 
-        const now = context.currentTime;
-        frequencies.forEach((freq) => {
-            const midiNote = frequencyToMidi(freq);
-            instrument.play(midiNote, now, { duration, gain: volume });
-        });
-    }, []);
+            // Resume audio context if suspended
+            if (context.state === "suspended") {
+                await context.resume();
+            }
+
+            // Ensure iOS audio is unlocked
+            unlockIOSAudio();
+
+            const now = context.currentTime;
+            frequencies.forEach((freq) => {
+                const midiNote = frequencyToMidi(freq);
+                instrument.play(midiNote, now, { duration, gain: volume });
+            });
+        },
+        []
+    );
 
     const setMasterVolume = useCallback((volume: number) => {
         const { masterGain } = audioRef.current;
