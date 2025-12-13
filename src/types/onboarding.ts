@@ -3,7 +3,11 @@ export type OnboardingStepId =
   | 'key-selection'
   | 'chord-strip'
   | 'play-chord'
+  | 'piano-intro'
+  | 'piano-toggles'
   | 'play-progression'
+  | 'variations'
+  | 'borrowed-chords'
   | 'explore';
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right' | 'center';
