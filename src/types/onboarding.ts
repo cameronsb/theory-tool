@@ -7,6 +7,7 @@ export type OnboardingStepId =
   | 'piano-toggles'
   | 'play-progression'
   | 'variations'
+  | 'combining-variations'
   | 'borrowed-chords'
   | 'explore';
 
